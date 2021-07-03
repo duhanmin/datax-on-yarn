@@ -20,37 +20,40 @@
         <maven.compiler.target>8</maven.compiler.target>
         <hadoop.version>2.7.2</hadoop.version>
         <lombok.version>1.18.20</lombok.version>
+        <datax.version>0.0.1</datax.version>
+        <fastjson.version>1.2.76</fastjson.version>
+        <lang3.version>3.11</lang3.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.alibaba.datax</groupId>
             <artifactId>core</artifactId>
-            <version>0.0.1</version>
+            <version>${datax.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.alibaba.datax</groupId>
             <artifactId>common</artifactId>
-            <version>0.0.1</version>
+            <version>${datax.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.alibaba.datax</groupId>
             <artifactId>transformer</artifactId>
-            <version>0.0.1</version>
+            <version>${datax.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.11</version>
+            <version>${lang3.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.76</version>
+            <version>${fastjson.version}</version>
         </dependency>
 
         <dependency>
