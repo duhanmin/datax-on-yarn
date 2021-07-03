@@ -36,8 +36,8 @@ public class DataXExecutor {
     }
 
     public static void main(String[] args) {
-        String home = "/Users/duhanmin/Downloads/datax";
-        String job = "//Users/duhanmin/IdeaProjects/daima/java-on-yarn/src/main/resources/t1.json";
+        String home = "~/Downloads/datax";
+        String job = "~/IdeaProjects/daima/datax-on-yarn/src/main/resources/t1.json";
         start(home,job);
     }
 }
