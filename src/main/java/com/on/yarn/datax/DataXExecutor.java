@@ -7,7 +7,6 @@ import cn.hutool.core.util.StrUtil;
 import com.on.yarn.constant.Constants;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
 import java.io.InputStream;
 
 /**
@@ -41,9 +40,8 @@ public class DataXExecutor {
     }
 
     public static void main(String[] args) throws Throwable {
-        System.out.println(new File("/~/").getAbsolutePath());
-/*        String home = "/Users/duhanmin/Downloads/datax";
+        String home = "/Users/duhanmin/Downloads/datax";
         String job = "/Users/duhanmin/IdeaProjects/daima/datax-on-yarn/src/main/resources/orcfile_none.json";
-        start(home,job);*/
+        start(home,job);
     }
 }
