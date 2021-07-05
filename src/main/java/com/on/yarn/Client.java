@@ -145,6 +145,7 @@ public class Client {
      * @param args Command line arguments
      */
     public static void main(String[] args) {
+
         boolean result = false;
         try {
             Client client = new Client();
@@ -260,7 +261,6 @@ public class Client {
 
         if (cliParser.hasOption("debug")) {
             debugFlag = true;
-
         }
 
         if (cliParser.hasOption("keep_containers_across_application_attempts")) {
@@ -284,14 +284,18 @@ public class Client {
         }
 
         if (!cliParser.hasOption("jar_path")) {
-            throw new IllegalArgumentException("No jar file path specified for application master");
+            throw new IllegalArgumentException("No jar_path file path specified for application master");
         }
-
         appMasterJar = cliParser.getOptionValue("jar_path");
 
+        if (!cliParser.hasOption("datax_job")) {
+            throw new IllegalArgumentException("No datax_job file path specified for application master");
+        }
         dataxJob = cliParser.getOptionValue("datax_job");
 
-
+        if (!cliParser.hasOption("datax_home_hdfs")) {
+            throw new IllegalArgumentException("No datax_home_hdfs file path specified for application master");
+        }
         dataxHomeArchivePath = cliParser.getOptionValue("datax_home_hdfs");
 
         if (cliParser.hasOption("shell_args")) {

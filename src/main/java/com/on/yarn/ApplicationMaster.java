@@ -812,13 +812,11 @@ public class ApplicationMaster {
                 String dataxJob = path + Constants.DATAX_JOB;
                 String dataxHome = new File(path + Constants.DATAX_HOME).getAbsolutePath();
                 DataXExecutor.start(dataxHome,dataxJob);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 done = true;
                 finish();
                 throw new RuntimeException("dataxHome存在问题",e);
             }
-
-
 
             String command = System.getenv("JAVA_HOME") + "/bin/java -version";
             List<String> commands = new ArrayList<>();

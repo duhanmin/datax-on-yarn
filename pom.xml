@@ -27,33 +27,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.alibaba.datax</groupId>
-            <artifactId>core</artifactId>
-            <version>${datax.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.alibaba.datax</groupId>
-            <artifactId>common</artifactId>
-            <version>${datax.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.alibaba.datax</groupId>
-            <artifactId>transformer</artifactId>
-            <version>${datax.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>${lang3.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>${fastjson.version}</version>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-core</artifactId>
+            <version>5.6.6</version>
         </dependency>
 
         <dependency>
@@ -112,7 +88,11 @@
                                 </transformer>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+<!--                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.on.yarn.datax.DataXExecutor</mainClass>
+                                </transformer>-->
                             </transformers>
+
                         </configuration>
                     </execution>
                 </executions>
