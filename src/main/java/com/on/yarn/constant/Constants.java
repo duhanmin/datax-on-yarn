@@ -19,6 +19,6 @@ public class Constants {
 
     public static final String DATAX_TAR_GZ = "datax.tar.gz";
 
-    public static final String DATAX_SCRIPT_PYTHON = "/usr/bin/python {}/bin/datax.py {}";
+    public static final String DATAX_SCRIPT_PYTHON = "/usr/bin/python %s/bin/datax.py %s";
 
 }

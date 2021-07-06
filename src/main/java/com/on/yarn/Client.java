@@ -2,7 +2,7 @@ package com.on.yarn;
 
 import com.on.yarn.constant.Constants;
 import com.on.yarn.util.Log4jPropertyHelper;
-import com.on.yarn.yarn.YarnHelper;
+import com.on.yarn.util.YarnHelper;
 import org.apache.commons.cli.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;

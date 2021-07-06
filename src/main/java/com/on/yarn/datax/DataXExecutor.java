@@ -1,10 +1,7 @@
 package com.on.yarn.datax;
 
-import cn.hutool.core.io.IoUtil;
-import cn.hutool.core.io.LineHandler;
-import cn.hutool.core.util.RuntimeUtil;
-import cn.hutool.core.util.StrUtil;
 import com.on.yarn.constant.Constants;
+import com.on.yarn.process.IoUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.InputStream;
@@ -18,16 +15,14 @@ import java.io.InputStream;
 public class DataXExecutor {
 
     public static void start(String dataxHome, String dataxJob) throws Throwable {
-        String script = StrUtil.format(Constants.DATAX_SCRIPT_PYTHON,dataxHome,dataxJob);
+        String script = String.format(Constants.DATAX_SCRIPT_PYTHON,dataxHome,dataxJob);
         Process pro = null;
         InputStream inputStream = null;
         try {
-            pro = RuntimeUtil.exec(script);
+            pro = new ProcessBuilder(script).redirectErrorStream(true).start();
             inputStream = pro.getInputStream();
 
-            IoUtil.readUtf8Lines(inputStream, (LineHandler) line -> {
-                System.out.println(line);
-            });
+            IoUtil.readUtf8Lines(inputStream, System.out::println);
 
             int exitCode = pro.waitFor();
             assert exitCode == 0;
@@ -35,7 +30,7 @@ public class DataXExecutor {
             log.info("job运行结束:{}",script);
         }finally {
             IoUtil.close(inputStream);
-            RuntimeUtil.destroy(pro);
+            IoUtil.destroy(pro);
         }
     }
 

@@ -1,4 +1,4 @@
-package com.on.yarn.yarn;
+package com.on.yarn.util;
 
 import com.on.yarn.constant.Constants;
 import org.apache.hadoop.conf.Configuration;
