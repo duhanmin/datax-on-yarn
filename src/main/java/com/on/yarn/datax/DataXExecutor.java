@@ -2,6 +2,7 @@ package com.on.yarn.datax;
 
 import com.on.yarn.constant.Constants;
 import com.on.yarn.process.IoUtil;
+import com.on.yarn.process.RuntimeUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.InputStream;
@@ -18,11 +19,15 @@ public class DataXExecutor {
         String script = String.format(Constants.DATAX_SCRIPT_PYTHON,dataxHome,dataxJob);
         Process pro = null;
         InputStream inputStream = null;
+        InputStream errorStream = null;
         try {
-            pro = new ProcessBuilder(script).redirectErrorStream(true).start();
+            pro = RuntimeUtil.exec(script);
             inputStream = pro.getInputStream();
-
+            errorStream = pro.getErrorStream();
             IoUtil.readUtf8Lines(inputStream, System.out::println);
+            IoUtil.readUtf8Lines(errorStream, line -> {
+                throw new RuntimeException(line);
+            });
 
             int exitCode = pro.waitFor();
             assert exitCode == 0;
@@ -30,13 +35,14 @@ public class DataXExecutor {
             log.info("job运行结束:{}",script);
         }finally {
             IoUtil.close(inputStream);
+            IoUtil.close(errorStream);
             IoUtil.destroy(pro);
         }
     }
 
     public static void main(String[] args) throws Throwable {
         String home = "/Users/duhanmin/Downloads/datax";
-        String job = "/Users/duhanmin/IdeaProjects/daima/datax-on-yarn/src/main/resources/orcfile_none.json";
+        String job = "/Users/duhanmin/IdeaProjects/daima/datax-on-yarn/src/main/resources/t1.json";
         start(home,job);
     }
 }
