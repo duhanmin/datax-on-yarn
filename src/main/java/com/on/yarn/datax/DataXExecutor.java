@@ -19,15 +19,10 @@ public class DataXExecutor {
         String script = String.format(Constants.DATAX_SCRIPT_PYTHON,dataxHome,dataxJob);
         Process pro = null;
         InputStream inputStream = null;
-        InputStream errorStream = null;
         try {
             pro = RuntimeUtil.exec(script);
             inputStream = pro.getInputStream();
-            errorStream = pro.getErrorStream();
             IoUtil.readUtf8Lines(inputStream, System.out::println);
-            IoUtil.readUtf8Lines(errorStream, line -> {
-                throw new RuntimeException(line);
-            });
 
             int exitCode = pro.waitFor();
             assert exitCode == 0;
@@ -35,7 +30,6 @@ public class DataXExecutor {
             log.info("job运行结束:{}",script);
         }finally {
             IoUtil.close(inputStream);
-            IoUtil.close(errorStream);
             IoUtil.destroy(pro);
         }
     }
