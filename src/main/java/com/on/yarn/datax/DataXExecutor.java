@@ -42,7 +42,7 @@ public class DataXExecutor {
 
     public static void main(String[] args) throws Throwable {
         String home = "/Users/duhanmin/Downloads/datax";
-        String job = "/Users/duhanmin/IdeaProjects/daima/datax-on-yarn/src/main/resources/t1.json";
+        String job = DataXExecutor.class.getResource("/").getFile() + "t1.json";
         start(home,job);
     }
 }
