@@ -1,6 +1,6 @@
 package com.on.yarn.util;
 
-import com.on.yarn.constant.Constants;
+import com.lb.bi.dcm.datax.yarn.constant.Constants;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileContext;
 import org.apache.hadoop.fs.FileStatus;
@@ -45,35 +45,29 @@ public class YarnHelper {
         return classPathEnv.toString();
     }
 
-    public static void addFrameworkToDistributedCache(String javaPathInHdfs,
-                                                      Map<String, LocalResource> localResources,
-                                                      Configuration conf) throws IOException {
+    public static void addFrameworkToDistributedCache(String javaPathInHdfs, Map<String, LocalResource> localResources, Configuration conf) throws IOException {
         URI uri;
         try {
             uri = new URI(javaPathInHdfs);
         } catch (URISyntaxException e) {
-            throw new IllegalArgumentException("Unable to parse '" + javaPathInHdfs
-                    + "' as a URI.");
+            throw new IllegalArgumentException("Unable to parse '" + javaPathInHdfs + "' as a URI.");
         }
 
         Path path = new Path(uri.getScheme(), uri.getAuthority(), uri.getPath());
         FileSystem fs = path.getFileSystem(conf);
-        Path frameworkPath = fs.makeQualified(
-                new Path(uri.getScheme(), uri.getAuthority(), uri.getPath()));
+        Path frameworkPath = fs.makeQualified(new Path(uri.getScheme(), uri.getAuthority(), uri.getPath()));
 
         FileContext fc = FileContext.getFileContext(frameworkPath.toUri(), conf);
         frameworkPath = fc.resolvePath(frameworkPath);
         uri = frameworkPath.toUri();
         try {
-            uri = new URI(uri.getScheme(), uri.getAuthority(), uri.getPath(),
-                    null, Constants.JAR_FILE_LINKEDNAME);
+            uri = new URI(uri.getScheme(), uri.getAuthority(), uri.getPath(), null, Constants.JAR_FILE_LINKEDNAME);
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException(e);
         }
 
         FileStatus scFileStatus = fs.getFileStatus(frameworkPath);
-        LocalResource scRsrc =
-                LocalResource.newInstance(
+        LocalResource scRsrc = LocalResource.newInstance(
                         ConverterUtils.getYarnUrlFromURI(uri),
                         LocalResourceType.ARCHIVE, LocalResourceVisibility.PRIVATE,
                         scFileStatus.getLen(), scFileStatus.getModificationTime());

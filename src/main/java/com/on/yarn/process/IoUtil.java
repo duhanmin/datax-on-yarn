@@ -33,35 +33,17 @@ public class IoUtil {
      * @param lineHandler 行处理接口，实现handle方法用于编辑一行的数据后入到指定地方
      * @throws IOException IO异常
      */
-    public static void readLines(@NonNull Reader reader, @NonNull LineHandler lineHandler) throws IOException {
+    public static void readLines(final @NonNull BufferedReader reader, @NonNull LineHandler lineHandler) throws IOException {
         // 从返回的内容中读取所需内容
-        final BufferedReader bReader = getReader(reader);
         String line;
         try {
-            while ((line = bReader.readLine()) != null) {
+            while ((line = reader.readLine()) != null) {
                 lineHandler.handle(line);
             }
         } catch (IOException e) {
             throw new IOException(e);
         }
     }
-
-    /**
-     * 获得{@link BufferedReader}<br>
-     * 如果是{@link BufferedReader}强转返回，否则新建。如果提供的Reader为null返回null
-     *
-     * @param reader 普通Reader，如果为null返回null
-     * @return {@link BufferedReader} or null
-     * @since 3.0.9
-     */
-    public static BufferedReader getReader(Reader reader) {
-        if (null == reader) {
-            return null;
-        }
-
-        return (reader instanceof BufferedReader) ? (BufferedReader) reader : new BufferedReader(reader);
-    }
-
     /**
      * 获得一个Reader
      *
@@ -91,7 +73,6 @@ public class IoUtil {
      * @param closeable 被关闭的对象
      */
     public static void close(Closeable closeable) {
-
         if (null != closeable) {
             try {
                 closeable.close();

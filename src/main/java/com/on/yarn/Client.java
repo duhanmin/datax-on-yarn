@@ -20,11 +20,9 @@ import org.apache.hadoop.io.DataOutputBuffer;
 import org.apache.hadoop.security.Credentials;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.hadoop.security.token.Token;
-import org.apache.hadoop.yarn.api.ApplicationClientProtocol;
 import org.apache.hadoop.yarn.api.ApplicationConstants;
 import org.apache.hadoop.yarn.api.ApplicationConstants.Environment;
 import org.apache.hadoop.yarn.api.protocolrecords.GetNewApplicationResponse;
-import org.apache.hadoop.yarn.api.protocolrecords.KillApplicationRequest;
 import org.apache.hadoop.yarn.api.records.*;
 import org.apache.hadoop.yarn.client.api.YarnClient;
 import org.apache.hadoop.yarn.client.api.YarnClientApplication;
@@ -36,42 +34,11 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.*;
 
-/**
- * Client for Distributed Shell application submission to YARN.
- * <p>
- * <p> The distributed shell client allows an application master to be launched that in turn would run
- * the provided shell command on a set of containers. </p>
- * <p>
- * <p>This client is meant to act as an example on how to write yarn-based applications. </p>
- * <p>
- * <p> To submit an application, a client first needs to connect to the <code>ResourceManager</code>
- * aka ApplicationsManager or ASM via the {@link ApplicationClientProtocol}. The {@link ApplicationClientProtocol}
- * provides a way for the client to get access to cluster information and to request for a
- * new {@link ApplicationId}. <p>
- * <p>
- * <p> For the actual job submission, the client first has to create an {@link ApplicationSubmissionContext}.
- * The {@link ApplicationSubmissionContext} defines the application details such as {@link ApplicationId}
- * and application name, the priority assigned to the application and the queue
- * to which this application needs to be assigned. In addition to this, the {@link ApplicationSubmissionContext}
- * also defines the {@link ContainerLaunchContext} which describes the <code>Container</code> with which
- * the {@link ApplicationMaster} is launched. </p>
- * <p>
- * <p> The {@link ContainerLaunchContext} in this scenario defines the resources to be allocated for the
- * {@link ApplicationMaster}'s container, the local resources (jars, configuration files) to be made available
- * and the environment to be set for the {@link ApplicationMaster} and the commands to be executed to run the
- * {@link ApplicationMaster}. <p>
- * <p>
- * <p> Using the {@link ApplicationSubmissionContext}, the client submits the application to the
- * <code>ResourceManager</code> and then monitors the application by requesting the <code>ResourceManager</code>
- * for an {@link ApplicationReport} at regular time intervals. In case of the application taking too long, the client
- * kills the application by submitting a {@link KillApplicationRequest} to the <code>ResourceManager</code>. </p>
- */
 @InterfaceAudience.Public
 @InterfaceStability.Unstable
 public class Client {
 
     private static final Log LOG = LogFactory.getLog(Client.class);
-
 
     // Configuration
     private final Configuration conf;
@@ -126,11 +93,7 @@ public class Client {
     // Command line options
     private final Options opts;
 
-    private static final String JAVA_OPTS_PATH = "javaOpts";
-    private static final String SHELL_ARGS_PATH = "shellArgs";
-    private static final String APP_MASTER_JAR_PATH = "AppMaster.jar";
-    // Hardcoded path to custom log_properties
-    private static final String LOG_4_J_PATH = "log4j.properties";
+
 
     private int memoryOverhead = 384;
 
@@ -169,16 +132,14 @@ public class Client {
             LOG.info("Application completed successfully");
             System.exit(0);
         }
-        LOG.error("Application failed to complete successfully");
+        LOG.error("Application failed");
         System.exit(2);
     }
 
     /**
      */
     public Client(Configuration conf) {
-        this(
-                ApplicationMaster.class.getName(),
-                conf);
+        this(ApplicationMaster.class.getName(), conf);
     }
 
     Client(String appMasterMainClass, Configuration conf) {
@@ -431,18 +392,12 @@ public class Client {
         // Copy the application master jar to the filesystem
         // Create a local resource to point to the destination jar path
         FileSystem fs = FileSystem.get(conf);
-        Path dst = addToLocalResources(fs, appMasterJar, APP_MASTER_JAR_PATH, appId.toString(),
-                localResources, null);
+        Path dst = addToLocalResources(fs, appMasterJar, Constants.APP_MASTER_JAR_PATH, appId.toString(), localResources, null);
 
         YarnHelper.addFrameworkToDistributedCache(dst.toUri().toString(), localResources, conf);
 
         if (null != dataxJob){
             addToLocalResources(fs, dataxJob, Constants.DATAX_JOB, appId.toString(), localResources, null);
-/*            String dataxJobJson = FileUtil.readUtf8String(dataxJob);
-            String fileName = FileUtil.getPrefix(dataxJob);
-            shellArgs = java.util.Arrays.copyOf(shellArgs,2);
-            shellArgs[0] = EscapeUtil.escapeAll(fileName);
-            shellArgs[1] = EscapeUtil.escapeAll(dataxJobJson);*/
         }
 
         if (null != dataxHomeArchivePath) {
@@ -451,18 +406,15 @@ public class Client {
 
         // Set the log4j properties if needed
         if (!log4jPropFile.isEmpty()) {
-            addToLocalResources(fs, log4jPropFile, LOG_4_J_PATH, appId.toString(),
-                    localResources, null);
+            addToLocalResources(fs, log4jPropFile, Constants.LOG_4_J_PATH, appId.toString(), localResources, null);
         }
 
         if (shellArgs.length > 0) {
-            addToLocalResources(fs, null, SHELL_ARGS_PATH, appId.toString(),
-                    localResources, StringUtils.join(shellArgs, " "));
+            addToLocalResources(fs, null, Constants.SHELL_ARGS_PATH, appId.toString(),localResources, StringUtils.join(shellArgs, " "));
         }
 
         if (javaOpts.length > 0) {
-            addToLocalResources(fs, null, JAVA_OPTS_PATH, appId.toString(),
-                    localResources, StringUtils.join(javaOpts, " "));
+            addToLocalResources(fs, null, Constants.JAVA_OPTS_PATH, appId.toString(), localResources, StringUtils.join(javaOpts, " "));
         }
 
         // Set the necessary security tokens as needed

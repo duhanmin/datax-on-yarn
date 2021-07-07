@@ -21,12 +21,8 @@ import org.apache.hadoop.util.ExitUtil;
 import org.apache.hadoop.util.Shell;
 import org.apache.hadoop.yarn.api.ApplicationConstants;
 import org.apache.hadoop.yarn.api.ApplicationConstants.Environment;
-import org.apache.hadoop.yarn.api.ApplicationMasterProtocol;
 import org.apache.hadoop.yarn.api.ContainerManagementProtocol;
-import org.apache.hadoop.yarn.api.protocolrecords.AllocateRequest;
-import org.apache.hadoop.yarn.api.protocolrecords.AllocateResponse;
 import org.apache.hadoop.yarn.api.protocolrecords.RegisterApplicationMasterResponse;
-import org.apache.hadoop.yarn.api.protocolrecords.StartContainerRequest;
 import org.apache.hadoop.yarn.api.records.*;
 import org.apache.hadoop.yarn.client.api.AMRMClient.ContainerRequest;
 import org.apache.hadoop.yarn.client.api.async.AMRMClientAsync;
@@ -45,53 +41,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * An ApplicationMaster for executing customized application on a set of launched
- * containers using the YARN framework.
- * <p>
- * <p>
- * This class is meant to act as an example on how to write yarn-based
- * application masters.
- * </p>
- * <p>
- * <p>
- * The ApplicationMaster is started on a container by the
- * <code>ResourceManager</code>'s launcher. The first thing that the
- * <code>ApplicationMaster</code> needs to do is to connect and register itself
- * with the <code>ResourceManager</code>. The registration sets up information
- * within the <code>ResourceManager</code> regarding what host:port the
- * ApplicationMaster is listening on to provide any form of functionality to a
- * client as well as a tracking url that a client can use to keep track of
- * status/job history if needed.
- * </p>
- * <p>
- * <p>
- * The <code>ApplicationMaster</code> needs to send a heartbeat to the
- * <code>ResourceManager</code> at regular intervals to inform the
- * <code>ResourceManager</code> that it is up and alive. The
- * {@link ApplicationMasterProtocol#allocate} to the <code>ResourceManager</code> from the
- * <code>ApplicationMaster</code> acts as a heartbeat.
- * <p>
- * <p>
- * For the actual handling of the job, the <code>ApplicationMaster</code> has to
- * request the <code>ResourceManager</code> via {@link AllocateRequest} for the
- * required no. of containers using {@link ResourceRequest} with the necessary
- * resource specifications such as node location, computational
- * (memory/disk/cpu) resource requirements. The <code>ResourceManager</code>
- * responds with an {@link AllocateResponse} that informs the
- * <code>ApplicationMaster</code> of the set of newly allocated containers,
- * completed containers as well as current state of available resources.
- * </p>
- * <p>
- * <p>
- * For each allocated container, the <code>ApplicationMaster</code> can then set
- * up the necessary launch context via {@link ContainerLaunchContext} to specify
- * the allocated container id, local resources required by the executable, the
- * environment to be setup for the executable, commands to execute, etc. and
- * submit a {@link StartContainerRequest} to the {@link ContainerManagementProtocol} to
- * launch and execute the defined commands on the given allocated container.
- * </p>
- */
 @Data
 @InterfaceAudience.Public
 @InterfaceStability.Unstable
@@ -160,9 +109,6 @@ public class ApplicationMaster {
     // Env variables to be setup for the shell command
     private Map<String, String> shellEnv = new HashMap<>();
 
-    private static final String SHELL_ARGS_PATH = "shellArgs";
-    private static final String JAVA_OPTS_PATH = "javaOpts";
-
     private volatile boolean done;
 
     private ByteBuffer allTokens;
@@ -190,6 +136,7 @@ public class ApplicationMaster {
             }
             appMaster.run();
             LOG.info("ApplicationMaster finish...");
+            DataXExecutor.run();
             result = appMaster.finish();
             LOG.info("ApplicationMaster finish");
         } catch (Throwable t) {
@@ -331,12 +278,12 @@ public class ApplicationMaster {
                 + appAttemptID.getApplicationId().getClusterTimestamp()
                 + ", attemptId=" + appAttemptID.getAttemptId());
 
-        if (fileExist(SHELL_ARGS_PATH)) {
-            shellArgs = readContent(SHELL_ARGS_PATH);
+        if (fileExist(Constants.SHELL_ARGS_PATH)) {
+            shellArgs = readContent(Constants.SHELL_ARGS_PATH);
         }
 
-        if (fileExist(JAVA_OPTS_PATH)) {
-            javaOpts = readContent(JAVA_OPTS_PATH);
+        if (fileExist(Constants.JAVA_OPTS_PATH)) {
+            javaOpts = readContent(Constants.JAVA_OPTS_PATH);
         }
 
         if (cliParser.hasOption("shell_env")) {
@@ -386,7 +333,7 @@ public class ApplicationMaster {
      * @throws IOException
      */
     @SuppressWarnings({"unchecked"})
-    public void run() throws YarnException, IOException {
+    public void run() throws Throwable {
         LOG.info("Starting ApplicationMaster");
 
         // Note: Credentials, Token, UserGroupInformation, DataOutputBuffer class
@@ -409,7 +356,7 @@ public class ApplicationMaster {
 
         // Create appSubmitterUgi and add original tokens to it
         String appSubmitterUserName =
-                System.getenv(ApplicationConstants.Environment.USER.name());
+                System.getenv(Environment.USER.name());
         appSubmitterUgi =
                 UserGroupInformation.createRemoteUser(appSubmitterUserName);
         appSubmitterUgi.addCredentials(credentials);
@@ -806,17 +753,6 @@ public class ApplicationMaster {
             for (CharSequence str : vargs) {
                 command.append(str).append(" ");
             }*/
-
-            try {
-                String path = new File("./").getAbsolutePath() + "/";
-                String dataxJob = path + Constants.DATAX_JOB;
-                String dataxHome = new File(path + Constants.DATAX_HOME).getAbsolutePath();
-                DataXExecutor.start(dataxHome,dataxJob);
-            } catch (Throwable e) {
-                done = true;
-                finish();
-                throw new RuntimeException("dataxHome存在问题",e);
-            }
 
             String command = System.getenv("JAVA_HOME") + "/bin/java -version";
             List<String> commands = new ArrayList<>();

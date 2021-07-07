@@ -5,7 +5,13 @@ package com.on.yarn.constant;
  */
 public class Constants {
 
-    public static final String JAR_FILE_LINKEDNAME = "demo";
+    public static final String SHELL_ARGS_PATH = "shellArgs";
+
+    public static final String JAVA_OPTS_PATH = "javaOpts";
+
+    public static final String JAR_FILE_LINKEDNAME = "jar";
+
+    public static final String APP_MASTER_JAR_PATH = "AppMaster.jar";
 
     public static final String JAR_FILE_PATH = "JAR_FILE_PATH";
 
@@ -16,8 +22,6 @@ public class Constants {
     public static final String DATAX_HOME = "/" + DATAX + "/" + DATAX +"/";
 
     public static final String DATAX_JOB = "datax.job";
-
-    public static final String DATAX_TAR_GZ = "datax.tar.gz";
 
     public static final String DATAX_SCRIPT_PYTHON = "/usr/bin/python %s/bin/datax.py %s";
 
