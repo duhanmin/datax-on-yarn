@@ -1,6 +1,6 @@
 package com.on.yarn.process;
 
-import com.lb.bi.dcm.datax.yarn.util.CharSequenceUtil;
+import com.on.yarn.util.CharSequenceUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
