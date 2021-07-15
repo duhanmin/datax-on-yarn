@@ -1,8 +1,8 @@
 package com.on.yarn;
 
-import com.lb.bi.dcm.datax.yarn.constant.Constants;
-import com.lb.bi.dcm.datax.yarn.util.Log4jPropertyHelper;
-import com.lb.bi.dcm.datax.yarn.util.YarnHelper;
+import com.on.yarn.constant.Constants;
+import com.on.yarn.util.Log4jPropertyHelper;
+import com.on.yarn.util.YarnHelper;
 import org.apache.commons.cli.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -137,7 +137,7 @@ public class Client {
     /**
      */
     public Client(Configuration conf) {
-        this(com.lb.bi.dcm.datax.yarn.ApplicationMaster.class.getName(), conf);
+        this(ApplicationMaster.class.getName(), conf);
     }
 
     Client(String appMasterMainClass, Configuration conf) {

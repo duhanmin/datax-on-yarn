@@ -1,9 +1,9 @@
 package com.on.yarn;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.lb.bi.dcm.datax.yarn.constant.Constants;
-import com.lb.bi.dcm.datax.yarn.datax.DataXExecutor;
-import com.lb.bi.dcm.datax.yarn.util.Log4jPropertyHelper;
+import com.on.yarn.constant.Constants;
+import com.on.yarn.datax.DataXExecutor;
+import com.on.yarn.util.Log4jPropertyHelper;
 import lombok.Data;
 import org.apache.commons.cli.*;
 import org.apache.commons.logging.Log;

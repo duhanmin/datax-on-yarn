@@ -1,10 +1,10 @@
 package com.on.yarn.datax;
 
-import com.lb.bi.dcm.datax.yarn.constant.Constants;
-import com.lb.bi.dcm.datax.yarn.process.IoUtil;
-import com.lb.bi.dcm.datax.yarn.process.RuntimeUtil;
-import com.lb.bi.dcm.datax.yarn.util.FileUtil;
-import org.apache.commons.lang3.StringUtils;
+import com.on.yarn.constant.Constants;
+import com.on.yarn.process.IoUtil;
+import com.on.yarn.process.RuntimeUtil;
+import com.on.yarn.util.FileUtil;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

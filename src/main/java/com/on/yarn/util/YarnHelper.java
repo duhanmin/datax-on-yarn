@@ -1,6 +1,6 @@
 package com.on.yarn.util;
 
-import com.lb.bi.dcm.datax.yarn.constant.Constants;
+import com.on.yarn.constant.Constants;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileContext;
 import org.apache.hadoop.fs.FileStatus;
