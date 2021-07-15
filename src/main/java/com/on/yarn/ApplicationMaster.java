@@ -1,9 +1,9 @@
 package com.on.yarn;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.on.yarn.constant.Constants;
-import com.on.yarn.datax.DataXExecutor;
-import com.on.yarn.util.Log4jPropertyHelper;
+import com.lb.bi.dcm.datax.yarn.constant.Constants;
+import com.lb.bi.dcm.datax.yarn.datax.DataXExecutor;
+import com.lb.bi.dcm.datax.yarn.util.Log4jPropertyHelper;
 import lombok.Data;
 import org.apache.commons.cli.*;
 import org.apache.commons.logging.Log;
@@ -123,7 +123,9 @@ public class ApplicationMaster {
     public static final int DEFAULT_APP_MASTER_TRACKING_URL_PORT = 8090;
 
     // Container memory overhead in MB
-    private int memoryOverhead = 384;
+    private int memoryOverhead = 10;
+
+    private static int amMemory = 128;
 
     public static void main(String[] args) {
         boolean result = false;
@@ -136,7 +138,7 @@ public class ApplicationMaster {
             }
             appMaster.run();
             LOG.info("ApplicationMaster finish...");
-            DataXExecutor.run();
+            DataXExecutor.run(amMemory);
             result = appMaster.finish();
             LOG.info("ApplicationMaster finish");
         } catch (Throwable t) {
@@ -205,6 +207,8 @@ public class ApplicationMaster {
                 "Amount of memory in MB to be requested to run the shell command");
         opts.addOption("container_vcores", true,
                 "Amount of virtual cores to be requested to run the shell command");
+        opts.addOption("master_memory", true,
+                "Amount of memory in MB to be requested to run the application master");
         opts.addOption("num_containers", true,
                 "No. of containers on which the shell command needs to be executed");
         opts.addOption("memory_overhead", true,
@@ -238,6 +242,12 @@ public class ApplicationMaster {
 
         if (cliParser.hasOption("debug")) {
             dumpOutDebugInfo();
+        }
+
+        amMemory = Integer.parseInt(cliParser.getOptionValue("master_memory", "128"));
+        if (amMemory < 0) {
+            throw new IllegalArgumentException("Invalid memory specified for application master, exiting."
+                    + " Specified memory=" + amMemory);
         }
 
         Map<String, String> envs = System.getenv();
@@ -304,10 +314,10 @@ public class ApplicationMaster {
             }
         }
 
-        containerMemory = Integer.parseInt(cliParser.getOptionValue("container_memory", "512"));
+        containerMemory = Integer.parseInt(cliParser.getOptionValue("container_memory", "10"));
         containerVirtualCores = Integer.parseInt(cliParser.getOptionValue("container_vcores", "1"));
         numTotalContainers = Integer.parseInt(cliParser.getOptionValue("num_containers", "1"));
-        memoryOverhead = Integer.parseInt(cliParser.getOptionValue("memory_overhead", "2"));
+        memoryOverhead = Integer.parseInt(cliParser.getOptionValue("memory_overhead", "1"));
 
         if (numTotalContainers == 0) {
             throw new IllegalArgumentException("Cannot run distributed shell with no containers");

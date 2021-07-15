@@ -82,6 +82,19 @@ public class IoUtil {
         }
     }
 
+    /**
+     * 关闭<br>
+     * 关闭失败不会抛出异常
+     *
+     * @param closeables 被关闭的对象
+     */
+    public static void close(Closeable... closeables) {
+        if (null == closeables || closeables.length == 0) return;
+        for (Closeable closeable:closeables) {
+            close(closeable);
+        }
+    }
+
     public static void destroy(Process process) {
         if (null != process) {
             process.destroy();

@@ -1,6 +1,6 @@
 package com.on.yarn.process;
 
-import com.on.yarn.util.CharSequenceUtil;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ public class RuntimeUtil {
         // 单条命令的情况
         if (1 == cmds.length) {
             final String cmd = cmds[0];
-            if (CharSequenceUtil.isBlank(cmd)) {
+            if (StringUtils.isBlank(cmd)) {
                 throw new NullPointerException("Command is blank !");
             }
             cmds = cmdSplit(cmd);

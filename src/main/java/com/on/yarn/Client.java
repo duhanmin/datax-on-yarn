@@ -1,8 +1,8 @@
 package com.on.yarn;
 
-import com.on.yarn.constant.Constants;
-import com.on.yarn.util.Log4jPropertyHelper;
-import com.on.yarn.util.YarnHelper;
+import com.lb.bi.dcm.datax.yarn.constant.Constants;
+import com.lb.bi.dcm.datax.yarn.util.Log4jPropertyHelper;
+import com.lb.bi.dcm.datax.yarn.util.YarnHelper;
 import org.apache.commons.cli.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -93,9 +93,7 @@ public class Client {
     // Command line options
     private final Options opts;
 
-
-
-    private int memoryOverhead = 384;
+    private int memoryOverhead = 50;
 
     /**
      * Application datax jar file
@@ -139,7 +137,7 @@ public class Client {
     /**
      */
     public Client(Configuration conf) {
-        this(ApplicationMaster.class.getName(), conf);
+        this(com.lb.bi.dcm.datax.yarn.ApplicationMaster.class.getName(), conf);
     }
 
     Client(String appMasterMainClass, Configuration conf) {
@@ -283,7 +281,7 @@ public class Client {
                 shellEnv.put(key, val);
             }
         }
-        containerMemory = Integer.parseInt(cliParser.getOptionValue("container_memory", "512"));
+        containerMemory = Integer.parseInt(cliParser.getOptionValue("container_memory", "10"));
         containerVirtualCores = Integer.parseInt(cliParser.getOptionValue("container_vcores", "1"));
         numContainers = Integer.parseInt(cliParser.getOptionValue("num_containers", "1"));
         memoryOverhead = Integer.parseInt(cliParser.getOptionValue("memory_overhead", "2"));
@@ -455,6 +453,7 @@ public class Client {
         // Set the necessary command to execute the application master
         Vector<CharSequence> vargs = new Vector<>(30);
 
+        int amMemory = 128;
         // Set java executable command
         LOG.info("Setting up app master command");
         vargs.add(System.getenv("JAVA_HOME") + "/bin/java");
@@ -468,6 +467,7 @@ public class Client {
         vargs.add("--memory_overhead " + memoryOverhead);
         vargs.add("--num_containers " + numContainers);
         vargs.add("--priority " + shellCmdPriority);
+        vargs.add("--master_memory " + this.amMemory);
 
         for (Map.Entry<String, String> entry : shellEnv.entrySet()) {
             vargs.add("--shell_env " + entry.getKey() + "=" + entry.getValue());
