@@ -1,11 +1,11 @@
 # datax-on-yarn
 
-该项目可以让datax在yarn master上运行
+datax-on-yarn可以让datax在yarn master上运行
 
-* datax_home_hdfs 为datax在hdfs的安装包
-* datax_job为所用运行配置json
-
-其他参数略
+* datax_home_hdfs datax在hdfs的安装包
+* datax_job 配置json
+* master_memory内存为datax实际使用内存
+* yarn master内存内置128m(一般不需要修改)
 
 
 ```shell
