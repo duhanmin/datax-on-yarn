@@ -18,7 +18,7 @@
         <target.version>1.8</target.version>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <hadoop.version>2.7.2</hadoop.version>
+        <hadoop.version>3.2.1</hadoop.version>
         <lombok.version>1.18.20</lombok.version>
         <datax.version>0.0.1</datax.version>
         <fastjson.version>1.2.76</fastjson.version>

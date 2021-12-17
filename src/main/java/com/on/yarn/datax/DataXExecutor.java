@@ -4,7 +4,7 @@ import com.on.yarn.constant.Constants;
 import com.on.yarn.process.IoUtil;
 import com.on.yarn.process.RuntimeUtil;
 import com.on.yarn.util.FileUtil;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
