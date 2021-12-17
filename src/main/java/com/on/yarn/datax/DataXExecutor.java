@@ -43,20 +43,8 @@ public class DataXExecutor {
             });
 
             int exitCode = pro.waitFor();
-            assert exitCode == 0;
 
-            Integer mark = null;
-            for (int i = 0; i < logs.size(); i++) {
-                String logProcess = logs.get(i);
-                if (null == mark){
-                    if (logProcess.contains("info")){}
-                    else if (logProcess.contains("warn")){}
-                    else if (logProcess.contains("error"))
-                        mark = i;
-                }
-            }
-
-            if (null != mark){
+            if (exitCode != 0){
                 throw new RuntimeException();
             }else {
                 LOG.info("job successfully :"+script);
