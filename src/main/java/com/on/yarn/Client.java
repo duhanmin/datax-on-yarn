@@ -376,6 +376,7 @@ public class Client {
 
         // set the application name
         ApplicationSubmissionContext appContext = app.getApplicationSubmissionContext();
+        appContext.setApplicationType("datax");
         ApplicationId appId = appContext.getApplicationId();
 
         appContext.setKeepContainersAcrossApplicationAttempts(keepContainers);
