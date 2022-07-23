@@ -102,6 +102,7 @@ public class Client {
 
     private String dataxHomeArchivePath = "";
 
+    private String user;
     /**
      * @param args Command line arguments
      */
@@ -174,6 +175,7 @@ public class Client {
                         + " the new application attempt ");
         opts.addOption("debug", false, "Dump out debug information");
         opts.addOption("help", false, "Print usage");
+        opts.addOption("user", false, "user");
     }
 
     /**
@@ -297,6 +299,12 @@ public class Client {
         clientTimeout = Integer.parseInt(cliParser.getOptionValue("timeout", "-1"));
 
         log4jPropFile = cliParser.getOptionValue("log_properties", "");
+
+        user = cliParser.getOptionValue("user", "");
+
+        if (StringUtils.isNotBlank(user)) {
+            System.setProperty("HADOOP_USER_NAME", user);
+        }
 
         return true;
     }
