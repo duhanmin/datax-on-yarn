@@ -3,6 +3,7 @@ package com.on.yarn;
 import com.google.common.annotations.VisibleForTesting;
 import com.on.yarn.constant.Constants;
 import com.on.yarn.datax.DataXExecutor;
+import com.on.yarn.process.IoUtil;
 import com.on.yarn.util.Log4jPropertyHelper;
 import lombok.Data;
 import org.apache.commons.cli.*;
@@ -127,6 +128,12 @@ public class ApplicationMaster {
 
     private static int amMemory = 128;
 
+    private static Process pro;
+
+    static {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> IoUtil.destroy(pro)));
+    }
+
     public static void main(String[] args) {
         boolean result = false;
         try {
@@ -138,13 +145,17 @@ public class ApplicationMaster {
             }
             appMaster.run();
             LOG.info("ApplicationMaster finish...");
-            DataXExecutor.run(amMemory);
+            DataXExecutor dataXExecutor = new DataXExecutor();
+            pro = dataXExecutor.init(amMemory);
+            dataXExecutor.run();
             result = appMaster.finish();
             LOG.info("ApplicationMaster finish");
         } catch (Throwable t) {
             LOG.fatal("Error running ApplicationMaster", t);
             LogManager.shutdown();
             ExitUtil.terminate(1, t);
+        }finally {
+            IoUtil.destroy(pro);
         }
         if (result) {
             LOG.info("Application Master completed successfully. exiting");
