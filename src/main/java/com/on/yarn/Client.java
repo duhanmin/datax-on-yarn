@@ -448,8 +448,12 @@ public class Client {
             classPathEnv.append(ApplicationConstants.CLASS_PATH_SEPARATOR);
             classPathEnv.append(c.trim());
         }
+
         classPathEnv.append(ApplicationConstants.CLASS_PATH_SEPARATOR).append(
-                "./log4j.properties");
+                "./logback.xml");
+
+        classPathEnv.append(ApplicationConstants.CLASS_PATH_SEPARATOR).append(
+                "./parquet-logging.properties");
 
         // add the runtime classpath needed for tests to work
         if (conf.getBoolean(YarnConfiguration.IS_MINI_YARN_CLUSTER, false)) {
@@ -457,6 +461,7 @@ public class Client {
             classPathEnv.append(System.getProperty("java.class.path"));
         }
 
+        env.put("LANG", "zh_CN.UTF-8");
         env.put("CLASSPATH", classPathEnv.toString());
 
         // Set the necessary command to execute the application master
@@ -467,6 +472,11 @@ public class Client {
         vargs.add(System.getenv("JAVA_HOME") + "/bin/java");
         // Set Xmx based on am memory size
         vargs.add("-Xmx" + amMemory + "m");
+        vargs.add("-Dloglevel=info");
+        vargs.add("-Djava.security.egd=file:///dev/urandom");
+        vargs.add("-Duser.language=zh");
+        vargs.add("-Dfile.encoding=utf-8");
+        vargs.add("-Dlogback.statusListenerClass=ch.qos.logback.core.status.NopStatusListener");
         // Set class name
         vargs.add(appMasterMainClass);
         // Set params for Application Master
