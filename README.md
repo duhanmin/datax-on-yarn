@@ -18,3 +18,7 @@ datax-on-yarn可以让datax在yarn master上运行
   -datax_home_hdfs /tmp/linkis/hadoop/datax.tar.gz
 ```
 
+
+运行示例
+
+![image](https://user-images.githubusercontent.com/28647031/181469603-e864c064-2b4c-4e0c-92d2-9cb9435435aa.png)
