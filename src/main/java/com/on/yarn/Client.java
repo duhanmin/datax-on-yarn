@@ -462,7 +462,6 @@ public class Client {
         // Set the necessary command to execute the application master
         Vector<CharSequence> vargs = new Vector<>(30);
 
-        int amMemory = 128;
         // Set java executable command
         LOG.info("Setting up app master command");
         vargs.add(System.getenv("JAVA_HOME") + "/bin/java");
