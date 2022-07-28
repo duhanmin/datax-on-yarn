@@ -1,5 +1,6 @@
 package com.on.yarn;
 
+import cn.hutool.core.util.ArrayUtil;
 import com.on.yarn.constant.Constants;
 import com.on.yarn.util.Log4jPropertyHelper;
 import com.on.yarn.util.YarnHelper;
@@ -159,6 +160,7 @@ public class Client {
         opts.addOption("jar_path", true, "Jar file containing the application master in local file system");
         opts.addOption("datax_job", true, "Jar file containing the application master in HDFS");
         opts.addOption("datax_home_hdfs", true, "Jar file containing the application master in HDFS");
+        opts.addOption("proxy_user", true, "proxy_user");
         opts.addOption("shell_args", true, "Command line args for the shell script."
                 + "Multiple args can be separated by empty space.");
         opts.addOption("java_opts", true, "Java opts for container");
@@ -175,7 +177,6 @@ public class Client {
                         + " the new application attempt ");
         opts.addOption("debug", false, "Dump out debug information");
         opts.addOption("help", false, "Print usage");
-        opts.addOption("user", false, "user");
     }
 
     /**
@@ -259,6 +260,14 @@ public class Client {
         }
         dataxHomeArchivePath = cliParser.getOptionValue("datax_home_hdfs");
 
+        user = cliParser.getOptionValue("proxy_user");
+
+        System.out.println("-----------" + ArrayUtil.toString(args));
+        if (StringUtils.isNotBlank(user)) {
+            System.out.println("-----------" + user);
+            System.setProperty("HADOOP_USER_NAME", user);
+        }
+
         if (cliParser.hasOption("shell_args")) {
             shellArgs = cliParser.getOptionValues("shell_args");
         }
@@ -299,12 +308,6 @@ public class Client {
         clientTimeout = Integer.parseInt(cliParser.getOptionValue("timeout", "-1"));
 
         log4jPropFile = cliParser.getOptionValue("log_properties", "");
-
-        user = cliParser.getOptionValue("user", "");
-
-        if (StringUtils.isNotBlank(user)) {
-            System.setProperty("HADOOP_USER_NAME", user);
-        }
 
         return true;
     }
@@ -448,8 +451,12 @@ public class Client {
             classPathEnv.append(ApplicationConstants.CLASS_PATH_SEPARATOR);
             classPathEnv.append(c.trim());
         }
+
         classPathEnv.append(ApplicationConstants.CLASS_PATH_SEPARATOR).append(
-                "./log4j.properties");
+                "./logback.xml");
+
+        classPathEnv.append(ApplicationConstants.CLASS_PATH_SEPARATOR).append(
+                "./parquet-logging.properties");
 
         // add the runtime classpath needed for tests to work
         if (conf.getBoolean(YarnConfiguration.IS_MINI_YARN_CLUSTER, false)) {
@@ -457,17 +464,22 @@ public class Client {
             classPathEnv.append(System.getProperty("java.class.path"));
         }
 
+        env.put("LANG", "zh_CN.UTF-8");
         env.put("CLASSPATH", classPathEnv.toString());
 
         // Set the necessary command to execute the application master
         Vector<CharSequence> vargs = new Vector<>(30);
 
-        int amMemory = 128;
         // Set java executable command
         LOG.info("Setting up app master command");
         vargs.add(System.getenv("JAVA_HOME") + "/bin/java");
         // Set Xmx based on am memory size
         vargs.add("-Xmx" + amMemory + "m");
+        vargs.add("-Dloglevel=info");
+        vargs.add("-Djava.security.egd=file:///dev/urandom");
+        vargs.add("-Duser.language=zh");
+        vargs.add("-Dfile.encoding=utf-8");
+        vargs.add("-Dlogback.statusListenerClass=ch.qos.logback.core.status.NopStatusListener");
         // Set class name
         vargs.add(appMasterMainClass);
         // Set params for Application Master
