@@ -1,6 +1,5 @@
 package com.on.yarn;
 
-import cn.hutool.core.util.ArrayUtil;
 import com.on.yarn.constant.Constants;
 import com.on.yarn.util.Log4jPropertyHelper;
 import com.on.yarn.util.YarnHelper;
@@ -262,9 +261,7 @@ public class Client {
 
         user = cliParser.getOptionValue("proxy_user");
 
-        System.out.println("-----------" + ArrayUtil.toString(args));
         if (StringUtils.isNotBlank(user)) {
-            System.out.println("-----------" + user);
             System.setProperty("HADOOP_USER_NAME", user);
         }
 
