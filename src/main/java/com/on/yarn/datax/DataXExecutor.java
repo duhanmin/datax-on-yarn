@@ -2,8 +2,6 @@ package com.on.yarn.datax;
 
 import com.alibaba.datax.core.Engine;
 import com.on.yarn.constant.Constants;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 
@@ -14,7 +12,6 @@ import java.io.File;
  */
 public class DataXExecutor {
 
-    private static final Log LOG = LogFactory.getLog(DataXExecutor.class);
     static {
         System.setProperty("file.encoding", "UTF-8");
         System.setProperty("logback.statusListenerClass", "ch.qos.logback.core.status.NopStatusListener");
