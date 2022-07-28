@@ -13,6 +13,7 @@ import java.io.File;
 public class DataXExecutor {
 
     static {
+        System.setProperty("loglevel", "info");
         System.setProperty("file.encoding", "UTF-8");
         System.setProperty("logback.statusListenerClass", "ch.qos.logback.core.status.NopStatusListener");
         System.setProperty("java.security.egd", "file:///dev/urandom");
