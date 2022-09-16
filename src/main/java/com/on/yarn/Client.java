@@ -1,5 +1,6 @@
 package com.on.yarn;
 
+import cn.hutool.core.util.StrUtil;
 import com.on.yarn.constant.Constants;
 import com.on.yarn.util.Log4jPropertyHelper;
 import com.on.yarn.util.YarnHelper;
@@ -262,6 +263,10 @@ public class Client {
         user = cliParser.getOptionValue("proxy_user");
 
         if (StringUtils.isNotBlank(user)) {
+            String mkdirStr = "hdfs dfs -mkdir /user/{}";
+            String chownStr = "hdfs dfs -chown -R {} /user/{}";
+            Constants.exec(StrUtil.format(mkdirStr, user));
+            Constants.exec(StrUtil.format(chownStr,user, user));
             System.setProperty("HADOOP_USER_NAME", user);
         }
 
