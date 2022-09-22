@@ -9,7 +9,7 @@ datax-on-yarn可以让datax在yarn master上运行
 ```shell
 /usr/bin/yarn jar /mnt/dss/211/datax-on-yarn-1.0.0.jar com.on.yarn.Client \
   -jar_path /mnt/dss/211/datax-on-yarn-1.0.0.jar \
-  -appname DemoApp \
+  -appname datax-job \
   -master_memory 1024 \
   -p dt=20200324,pt=20200324 \
   -queue default \
