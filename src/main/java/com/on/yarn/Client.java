@@ -1,5 +1,6 @@
 package com.on.yarn;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.on.yarn.constant.Constants;
 import com.on.yarn.util.Log4jPropertyHelper;
@@ -104,6 +105,11 @@ public class Client {
     private String dataxHomeArchivePath = "";
 
     private String user;
+
+    /**
+     * datax参数
+     */
+    private List<String> parameter = CollUtil.newArrayList();
     /**
      * @param args Command line arguments
      */
@@ -159,6 +165,7 @@ public class Client {
         opts.addOption("memory_overhead", true, "Amount of memory overhead in MB for application master and container");
         opts.addOption("jar_path", true, "Jar file containing the application master in local file system");
         opts.addOption("datax_job", true, "Jar file containing the application master in HDFS");
+        opts.addOption("p", true, "DataX传参");
         opts.addOption("datax_home_hdfs", true, "Jar file containing the application master in HDFS");
         opts.addOption("proxy_user", true, "proxy_user");
         opts.addOption("shell_args", true, "Command line args for the shell script."
@@ -311,6 +318,18 @@ public class Client {
 
         log4jPropFile = cliParser.getOptionValue("log_properties", "");
 
+        if (cliParser.hasOption("p")) {
+            String p = cliParser.getOptionValue("p");
+            if (StrUtil.isNotBlank(p)){
+                for (String str : StrUtil.split(p, ",")) {
+                    if(StrUtil.isNotBlank(str)){
+                        parameter.add(str);
+                    }
+                }
+            }
+        }
+
+        log4jPropFile = cliParser.getOptionValue("log_properties", "");
         return true;
     }
 
@@ -481,6 +500,11 @@ public class Client {
         vargs.add("-Djava.security.egd=file:///dev/urandom");
         vargs.add("-Duser.language=zh");
         vargs.add("-Dfile.encoding=utf-8");
+        if (CollUtil.isNotEmpty(parameter)){
+            for (String p : parameter) {
+                vargs.add("-D" + p);
+            }
+        }
         vargs.add("-Dlogback.statusListenerClass=ch.qos.logback.core.status.NopStatusListener");
         // Set class name
         vargs.add(appMasterMainClass);

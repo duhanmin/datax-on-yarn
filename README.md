@@ -11,6 +11,7 @@ datax-on-yarn可以让datax在yarn master上运行
   -jar_path /mnt/dss/211/datax-on-yarn-1.0.0.jar \
   -appname DemoApp \
   -master_memory 1024 \
+  -p dt=20200324,pt=20200324 \
   -queue default \
   -proxy_user  hanmin.du \
   -datax_job /mnt/dss/datax/job/t2.json \
