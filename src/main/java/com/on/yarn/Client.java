@@ -330,6 +330,7 @@ public class Client {
         }
 
         log4jPropFile = cliParser.getOptionValue("log_properties", "");
+
         return true;
     }
 
@@ -432,7 +433,9 @@ public class Client {
         }
 
         if (null != dataxHomeArchivePath) {
-            addToLocalResources(fs, dataxHomeArchivePath, Constants.DATAX,localResources);
+            if (StrUtil.endWith(dataxHomeArchivePath,".tar.gz")){
+                addToLocalResources(fs, dataxHomeArchivePath, Constants.DATAX,localResources);
+            }
         }
 
         // Set the log4j properties if needed
@@ -495,11 +498,17 @@ public class Client {
         LOG.info("Setting up app master command");
         vargs.add(System.getenv("JAVA_HOME") + "/bin/java");
         // Set Xmx based on am memory size
+        vargs.add("-Xms" + amMemory + "m");
         vargs.add("-Xmx" + amMemory + "m");
         vargs.add("-Dloglevel=info");
         vargs.add("-Djava.security.egd=file:///dev/urandom");
         vargs.add("-Duser.language=zh");
         vargs.add("-Dfile.encoding=utf-8");
+        vargs.add("-Ddatax=" + dataxHomeArchivePath);
+        ClientServer clientServer = new ClientServer();
+        clientServer.initClient();
+        vargs.add("-Dlog=" + clientServer.getUrl());
+
         if (CollUtil.isNotEmpty(parameter)){
             for (String p : parameter) {
                 vargs.add("-D" + p);
