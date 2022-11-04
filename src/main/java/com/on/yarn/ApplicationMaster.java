@@ -198,6 +198,8 @@ public class ApplicationMaster {
     public ApplicationMaster() {
         // Set up the configuration
         conf = new YarnConfiguration();
+        conf.set("yarn.resourcemanager.am.max-attempts", "3");
+        conf.set("mapreduce.am.max-attempts", "3");
     }
 
     /**
