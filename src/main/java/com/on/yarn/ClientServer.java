@@ -21,7 +21,11 @@ public class ClientServer {
     public void initClient() {
         server = HttpUtil.createServer(0);
         server.addAction("/log", (request, response) -> {
-            System.out.println("[AppMasterLog] " + request.getBody());
+            System.out.println(
+                    "-----------------------AppMasterLog-------------------------\n"
+                    + request.getBody()
+                    + "\n-----------------------AppMasterLog-------------------------"
+            );
             responseWriteSuccess(response);
         }).start();
     }
