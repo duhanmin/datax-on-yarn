@@ -200,6 +200,7 @@ public class ApplicationMaster {
         conf = new YarnConfiguration();
         conf.set("yarn.resourcemanager.am.max-attempts", "3");
         conf.set("mapreduce.am.max-attempts", "3");
+        conf.set("yarn.client.failover-sleep-base-ms","1000");
     }
 
     /**

@@ -153,6 +153,7 @@ public class Client {
         // set am retry to a lot of times
         conf.set("yarn.resourcemanager.am.max-attempts", "3");
         conf.set("mapreduce.am.max-attempts", "3");
+        conf.set("yarn.client.failover-sleep-base-ms","1000");
         this.appMasterMainClass = appMasterMainClass;
         yarnClient = YarnClient.createYarnClient();
         yarnClient.init(conf);
