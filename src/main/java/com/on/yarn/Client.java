@@ -499,7 +499,7 @@ public class Client {
         LOG.info("Setting up app master command");
         vargs.add(System.getenv("JAVA_HOME") + "/bin/java");
         // Set Xmx based on am memory size
-        vargs.add("-Xms" + amMemory + "m");
+        vargs.add("-Xms" + 128 + "m");
         vargs.add("-Xmx" + amMemory + "m");
         vargs.add("-Dloglevel=info");
         vargs.add("-Djava.security.egd=file:///dev/urandom");
