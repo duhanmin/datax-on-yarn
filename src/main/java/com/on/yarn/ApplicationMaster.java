@@ -778,9 +778,8 @@ public class ApplicationMaster {
                 command.append(str).append(" ");
             }*/
 
-            String command = System.getenv("JAVA_HOME") + "/bin/java -version";
             List<String> commands = new ArrayList<>();
-            commands.add(command);
+            commands.add("ls");
 
             // Set up ContainerLaunchContext, setting local resource, environment,
             // command and token for constructor.
