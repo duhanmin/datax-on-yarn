@@ -97,6 +97,8 @@ public class Client {
 
     private int memoryOverhead = 50;
 
+    private boolean reflect_run = true;
+
     /**
      * Application datax jar file
      */
@@ -168,6 +170,7 @@ public class Client {
         opts.addOption("jar_path", true, "Jar file containing the application master in local file system");
         opts.addOption("datax_job", true, "Jar file containing the application master in HDFS");
         opts.addOption("p", true, "DataX传参");
+        opts.addOption("reflect_run", true, "DataX job是否反射运行");
         opts.addOption("datax_home_hdfs", true, "Jar file containing the application master in HDFS");
         opts.addOption("proxy_user", true, "proxy_user");
         opts.addOption("shell_args", true, "Command line args for the shell script."
@@ -307,6 +310,7 @@ public class Client {
         containerVirtualCores = Integer.parseInt(cliParser.getOptionValue("container_vcores", "1"));
         numContainers = Integer.parseInt(cliParser.getOptionValue("num_containers", "1"));
         memoryOverhead = Integer.parseInt(cliParser.getOptionValue("memory_overhead", "2"));
+        reflect_run = Boolean.parseBoolean(cliParser.getOptionValue("reflect_run", "true"));
 
         if (containerMemory < 0 || containerVirtualCores < 0 || numContainers < 1) {
             throw new IllegalArgumentException("Invalid no. of containers or container memory/vcores specified,"
@@ -501,7 +505,10 @@ public class Client {
         vargs.add(System.getenv("JAVA_HOME") + "/bin/java");
         // Set Xmx based on am memory size
         vargs.add("-Xms" + 128 + "m");
-        vargs.add("-Xmx" + amMemory + "m");
+        if (reflect_run){
+            vargs.add("-Xmx" + amMemory + "m");
+        }
+        vargs.add("-Dreflect=" + reflect_run);
         vargs.add("-Dloglevel=info");
         vargs.add("-Djava.security.egd=file:///dev/urandom");
         vargs.add("-Duser.language=zh");
@@ -525,7 +532,7 @@ public class Client {
         vargs.add("--memory_overhead " + memoryOverhead);
         vargs.add("--num_containers " + numContainers);
         vargs.add("--priority " + shellCmdPriority);
-        vargs.add("--master_memory " + this.amMemory);
+        vargs.add("--master_memory " + amMemory);
 
         for (Map.Entry<String, String> entry : shellEnv.entrySet()) {
             vargs.add("--shell_env " + entry.getKey() + "=" + entry.getValue());

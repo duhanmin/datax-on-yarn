@@ -1,10 +1,11 @@
 package com.on.yarn;
 
-import cn.hutool.core.io.FileUtil;
-import cn.hutool.http.HttpUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.google.common.annotations.VisibleForTesting;
 import com.on.yarn.constant.Constants;
 import com.on.yarn.datax.DataXExecutor;
+import com.on.yarn.datax.DataXPidExecutor;
+import com.on.yarn.datax.Executor;
 import com.on.yarn.util.Log4jPropertyHelper;
 import lombok.Data;
 import org.apache.commons.cli.*;
@@ -133,7 +134,7 @@ public class ApplicationMaster {
 
     public static void main(String[] args) {
         boolean result = false;
-        String path = new File("./").getAbsolutePath() + "/";
+        Executor dataXExecutor = null;
         try {
             ApplicationMaster appMaster = new ApplicationMaster();
             LOG.info("Initializing ApplicationMaster");
@@ -143,17 +144,21 @@ public class ApplicationMaster {
             }
             appMaster.run();
             LOG.info("ApplicationMaster finish...");
-            DataXExecutor dataXExecutor = new DataXExecutor();
-            dataXExecutor.entry();
+            if ("true".equals(System.getProperty("reflect"))){
+                dataXExecutor = new DataXExecutor();
+            }else {
+                dataXExecutor = new DataXPidExecutor(amMemory);
+            }
+            dataXExecutor.run();
+            dataXExecutor.successful();
             //amMemory
             result = appMaster.finish();
             LOG.info("ApplicationMaster finish");
-            String log = FileUtil.readUtf8String(path + "log.log");
-            HttpUtil.post(System.getProperty("log"), log, 30000);
         } catch (Throwable t) {
+            if (ObjectUtil.isNotNull(dataXExecutor)){
+                dataXExecutor.failure();
+            }
             LOG.fatal("Error running ApplicationMaster", t);
-            String log = FileUtil.readUtf8String(path + "log.log");
-            HttpUtil.post(System.getProperty("log"), log, 30000);
             LogManager.shutdown();
             ExitUtil.terminate(1, t);
         }
@@ -778,9 +783,8 @@ public class ApplicationMaster {
                 command.append(str).append(" ");
             }*/
 
-            String command = System.getenv("JAVA_HOME") + "/bin/java -version";
             List<String> commands = new ArrayList<>();
-            commands.add(command);
+            commands.add("ls");
 
             // Set up ContainerLaunchContext, setting local resource, environment,
             // command and token for constructor.

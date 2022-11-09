@@ -1,6 +1,8 @@
 package com.on.yarn.datax;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.HttpUtil;
 import com.alibaba.datax.core.Engine;
 import com.on.yarn.constant.Constants;
 
@@ -11,11 +13,14 @@ import java.io.File;
  * Description:
  * Date: 2021/6/30 17:45
  */
-public class DataXExecutor {
+public class DataXExecutor implements Executor{
 
-    public void entry() throws Throwable {
+    private String path;
+
+    @Override
+    public void run() throws Throwable {
         String dataxHome = System.getProperty("datax");
-        String path = new File("./").getAbsolutePath() + "/";
+        path = new File("./").getAbsolutePath() + "/";
         String dataxJob = path + Constants.DATAX_JOB;
         if (StrUtil.endWith(dataxHome,".tar.gz")){
             dataxHome = new File(path + Constants.DATAX_HOME).getAbsolutePath();
@@ -27,5 +32,17 @@ public class DataXExecutor {
 
         String[] args = new String[]{"-mode", "standalone", "-jobid", "-1", "-job", dataxJob};
         Engine.entry(args);
+    }
+
+    @Override
+    public void successful() {
+        String log = FileUtil.readUtf8String(path + "log.log");
+        HttpUtil.post(System.getProperty("log"), log, 30000);
+    }
+
+    @Override
+    public void failure() {
+        String log = FileUtil.readUtf8String(path + "log.log");
+        HttpUtil.post(System.getProperty("log"), log, 30000);
     }
 }

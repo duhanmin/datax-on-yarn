@@ -31,6 +31,8 @@ public class Constants {
 
     public static final String DATAX_JOB = "datax.job";
 
+    public static final String DATAX_SCRIPT_PYTHON = "#!/bin/bash\n/usr/bin/python %s/bin/datax.py --jvm=\"-Xms%dm -Xmx%dm\" %s";
+
     public static boolean exec(String command) {
         boolean result;
         Process process = null;
