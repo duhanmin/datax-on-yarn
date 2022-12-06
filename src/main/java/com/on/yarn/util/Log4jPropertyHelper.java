@@ -31,9 +31,11 @@ import java.util.Properties;
  * Log4jPropertyHelper
  */
 public class Log4jPropertyHelper {
+
     public static void main(String[] args) {
         System.out.println(Log4jPropertyHelper.class.getName());
     }
+
     public static void updateLog4jConfiguration(Class<?> targetClass,
                                                 String log4jPath) throws Exception {
         Properties customProperties = new Properties();

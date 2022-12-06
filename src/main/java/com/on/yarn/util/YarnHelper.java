@@ -52,7 +52,6 @@ public class YarnHelper {
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException("Unable to parse '" + javaPathInHdfs + "' as a URI.");
         }
-
         Path path = new Path(uri.getScheme(), uri.getAuthority(), uri.getPath());
         FileSystem fs = path.getFileSystem(conf);
         Path frameworkPath = fs.makeQualified(new Path(uri.getScheme(), uri.getAuthority(), uri.getPath()));

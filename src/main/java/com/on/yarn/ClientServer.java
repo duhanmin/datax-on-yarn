@@ -35,8 +35,6 @@ public class ClientServer {
         return StrUtil.format(LOG,ip(),inetSocketAddress.getPort());
     }
 
-
-
     public static void responseWriteSuccess(HttpServerResponse response) {
         responseWrite(response, "{\"status\": 200}");
     }

@@ -321,7 +321,6 @@ public class Client {
         }
 
         clientTimeout = Integer.parseInt(cliParser.getOptionValue("timeout", "-1"));
-
         log4jPropFile = cliParser.getOptionValue("log_properties", "");
 
         if (cliParser.hasOption("p")) {

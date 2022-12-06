@@ -24,7 +24,6 @@ public class DataXExecutor implements Executor{
             if (StrUtil.endWith(dataxHome,".tar.gz")){
                 dataxHome = new File(path + Constants.DATAX_HOME).getAbsolutePath();
             }
-
             System.setProperty("datax.home", dataxHome);
             System.setProperty("logback.configurationFile", dataxHome + "/conf/logback.xml");
             System.setProperty("java.util.logging.config.file", dataxHome + "/conf/parquet-logging.properties");

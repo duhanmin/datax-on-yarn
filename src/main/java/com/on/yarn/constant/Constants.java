@@ -38,7 +38,6 @@ public class Constants {
         Process process = null;
         InputStream inputStream = null;
         try {
-            //杀掉进程
             process = RuntimeUtil.exec(command);
             inputStream = process.getInputStream();
             IoUtil.readUtf8Lines(inputStream, (LineHandler) log::info);

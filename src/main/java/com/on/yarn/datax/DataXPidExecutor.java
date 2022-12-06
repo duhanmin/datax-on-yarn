@@ -14,22 +14,22 @@ import java.io.InputStream;
 import java.util.UUID;
 
 @Slf4j
-public class DataXPidExecutor implements Executor{
+public class DataXPidExecutor implements Executor {
 
     private String path;
-    private Process pro = null;
+    private Process pro;
     private InputStream inputStream = null;
-    private String sh = null;
-    private String script = null;
+    private String sh;
+    private String script;
 
     public DataXPidExecutor(int amMemory) throws IOException {
         path = new File("./").getAbsolutePath() + "/";
         String dataxJob = path + Constants.DATAX_JOB;
         String dataxHome = System.getProperty("datax");
-        if (StrUtil.endWith(dataxHome,".tar.gz")){
+        if (StrUtil.endWith(dataxHome, ".tar.gz")) {
             dataxHome = new File(path + Constants.DATAX_HOME).getAbsolutePath();
         }
-        script = String.format(Constants.DATAX_SCRIPT_PYTHON,dataxHome,amMemory,amMemory,dataxJob);
+        script = String.format(Constants.DATAX_SCRIPT_PYTHON, dataxHome, amMemory, amMemory, dataxJob);
         log.info(script);
         sh = new File(path + UUID.randomUUID() + ".sh").getAbsolutePath();
         log.info(sh);
@@ -49,7 +49,7 @@ public class DataXPidExecutor implements Executor{
                 log.info("job successfully :"+script);
             }
         }finally {
-
+            end(path);
             IoUtil.close(inputStream);
             RuntimeUtil.destroy(pro);
             FileUtil.del(sh);
