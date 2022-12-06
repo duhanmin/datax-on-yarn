@@ -1,8 +1,6 @@
 package com.on.yarn.datax;
 
-import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.http.HttpUtil;
 import com.alibaba.datax.core.Engine;
 import com.on.yarn.constant.Constants;
 
@@ -32,17 +30,5 @@ public class DataXExecutor implements Executor{
 
         String[] args = new String[]{"-mode", "standalone", "-jobid", "-1", "-job", dataxJob};
         Engine.entry(args);
-    }
-
-    @Override
-    public void successful() {
-        String log = FileUtil.readUtf8String(path + "log.log");
-        HttpUtil.post(System.getProperty("log"), log, 30000);
-    }
-
-    @Override
-    public void failure() {
-        String log = FileUtil.readUtf8String(path + "log.log");
-        HttpUtil.post(System.getProperty("log"), log, 30000);
     }
 }

@@ -135,6 +135,7 @@ public class ApplicationMaster {
     public static void main(String[] args) {
         boolean result = false;
         Executor dataXExecutor = null;
+        String path = new File("./").getAbsolutePath() + "/";
         try {
             ApplicationMaster appMaster = new ApplicationMaster();
             LOG.info("Initializing ApplicationMaster");
@@ -150,25 +151,26 @@ public class ApplicationMaster {
                 dataXExecutor = new DataXPidExecutor(amMemory);
             }
             dataXExecutor.run();
-            dataXExecutor.successful();
-            //amMemory
             result = appMaster.finish();
+            dataXExecutor.end(path);
             LOG.info("ApplicationMaster finish");
         } catch (Throwable t) {
             if (ObjectUtil.isNotNull(dataXExecutor)){
-                dataXExecutor.failure();
+                dataXExecutor.end(path);
             }
             LOG.fatal("Error running ApplicationMaster", t);
             LogManager.shutdown();
             ExitUtil.terminate(1, t);
+        } finally {
+            if (result) {
+                LOG.info("Application Master completed successfully. exiting");
+                System.exit(0);
+            } else {
+                LOG.info("Application Master failed. exiting");
+                System.exit(2);
+            }
         }
-        if (result) {
-            LOG.info("Application Master completed successfully. exiting");
-            System.exit(0);
-        } else {
-            LOG.info("Application Master failed. exiting");
-            System.exit(2);
-        }
+
     }
 
     /**

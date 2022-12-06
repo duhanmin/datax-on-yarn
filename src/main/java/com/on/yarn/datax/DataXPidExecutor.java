@@ -9,6 +9,7 @@ import com.on.yarn.constant.Constants;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
 
@@ -21,7 +22,7 @@ public class DataXPidExecutor implements Executor{
     private String sh = null;
     private String script = null;
 
-    public DataXPidExecutor(int amMemory) {
+    public DataXPidExecutor(int amMemory) throws IOException {
         path = new File("./").getAbsolutePath() + "/";
         String dataxJob = path + Constants.DATAX_JOB;
         String dataxHome = System.getProperty("datax");
@@ -30,17 +31,17 @@ public class DataXPidExecutor implements Executor{
         }
         script = String.format(Constants.DATAX_SCRIPT_PYTHON,dataxHome,amMemory,amMemory,dataxJob);
         log.info(script);
-        sh = path + UUID.randomUUID() + ".sh";
+        sh = new File(path + UUID.randomUUID() + ".sh").getAbsolutePath();
         log.info(sh);
-        FileUtil.writeUtf8String(sh,script);
-        pro = RuntimeUtil.exec("sh",sh);
+        FileUtil.writeUtf8String(script, sh);
+        pro = Runtime.getRuntime().exec("sh " + sh);
     }
 
     @Override
     public void run() throws Throwable {
         try {
             inputStream = pro.getInputStream();
-            IoUtil.readUtf8Lines(inputStream, (LineHandler) System.out::println);
+            IoUtil.readUtf8Lines(inputStream, (LineHandler) log::info);
             int exitCode = pro.waitFor();
             if (exitCode != 0){
                 throw new RuntimeException();
@@ -53,15 +54,4 @@ public class DataXPidExecutor implements Executor{
             FileUtil.del(sh);
         }
     }
-
-    @Override
-    public void successful() {
-        Constants.exec("ls -la");
-    }
-
-    @Override
-    public void failure(){
-        Constants.exec("ls -la");
-    }
-
 }
