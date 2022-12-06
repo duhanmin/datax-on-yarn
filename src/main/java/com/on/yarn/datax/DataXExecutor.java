@@ -17,18 +17,22 @@ public class DataXExecutor implements Executor{
 
     @Override
     public void run() throws Throwable {
-        String dataxHome = System.getProperty("datax");
-        path = new File("./").getAbsolutePath() + "/";
-        String dataxJob = path + Constants.DATAX_JOB;
-        if (StrUtil.endWith(dataxHome,".tar.gz")){
-            dataxHome = new File(path + Constants.DATAX_HOME).getAbsolutePath();
+        try {
+            String dataxHome = System.getProperty("datax");
+            path = new File("./").getAbsolutePath() + "/";
+            String dataxJob = path + Constants.DATAX_JOB;
+            if (StrUtil.endWith(dataxHome,".tar.gz")){
+                dataxHome = new File(path + Constants.DATAX_HOME).getAbsolutePath();
+            }
+
+            System.setProperty("datax.home", dataxHome);
+            System.setProperty("logback.configurationFile", dataxHome + "/conf/logback.xml");
+            System.setProperty("java.util.logging.config.file", dataxHome + "/conf/parquet-logging.properties");
+
+            String[] args = new String[]{"-mode", "standalone", "-jobid", "-1", "-job", dataxJob};
+            Engine.entry(args);
+        }finally {
+            end(path);
         }
-
-        System.setProperty("datax.home", dataxHome);
-        System.setProperty("logback.configurationFile", dataxHome + "/conf/logback.xml");
-        System.setProperty("java.util.logging.config.file", dataxHome + "/conf/parquet-logging.properties");
-
-        String[] args = new String[]{"-mode", "standalone", "-jobid", "-1", "-job", dataxJob};
-        Engine.entry(args);
     }
 }
