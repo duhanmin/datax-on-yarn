@@ -1,6 +1,5 @@
 package com.on.yarn;
 
-import cn.hutool.core.util.ObjectUtil;
 import com.google.common.annotations.VisibleForTesting;
 import com.on.yarn.constant.Constants;
 import com.on.yarn.datax.DataXExecutor;
@@ -135,7 +134,6 @@ public class ApplicationMaster {
     public static void main(String[] args) {
         boolean result = false;
         Executor dataXExecutor = null;
-        String path = new File("./").getAbsolutePath() + "/";
         try {
             ApplicationMaster appMaster = new ApplicationMaster();
             LOG.info("Initializing ApplicationMaster");
@@ -152,12 +150,8 @@ public class ApplicationMaster {
             }
             dataXExecutor.run();
             result = appMaster.finish();
-            dataXExecutor.end(path);
             LOG.info("ApplicationMaster finish");
         } catch (Throwable t) {
-            if (ObjectUtil.isNotNull(dataXExecutor)){
-                dataXExecutor.end(path);
-            }
             LOG.fatal("Error running ApplicationMaster", t);
             LogManager.shutdown();
             ExitUtil.terminate(1, t);
