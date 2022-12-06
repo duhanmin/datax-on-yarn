@@ -49,7 +49,7 @@ public class DataXPidExecutor implements Executor{
                 log.info("job successfully :"+script);
             }
         }finally {
-
+            end(path);
             IoUtil.close(inputStream);
             RuntimeUtil.destroy(pro);
             FileUtil.del(sh);
