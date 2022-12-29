@@ -33,7 +33,10 @@ public class DataXPidExecutor implements Executor {
 
         if (StrUtil.endWith(dataxHome, ".tar.gz")) {
             dataxHome = new File(path + Constants.DATAX_HOME).getAbsolutePath();
+        } else {
+            init(dataxHome, path);
         }
+
         script = String.format(Constants.DATAX_SCRIPT_PYTHON, dataxHome, amMemory, dataxJob);
         log.info(script);
         sh = new File(path + UUID.randomUUID() + ".sh").getAbsolutePath();

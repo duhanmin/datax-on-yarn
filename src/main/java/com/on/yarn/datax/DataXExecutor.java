@@ -27,6 +27,8 @@ public class DataXExecutor implements Executor{
             FileUtil.writeUtf8String(content, dataxJob);
             if (StrUtil.endWith(dataxHome, ".tar.gz")) {
                 dataxHome = new File(path + Constants.DATAX_HOME).getAbsolutePath();
+            } else {
+                init(dataxHome, path);
             }
             System.setProperty("datax.home", dataxHome);
             System.setProperty("logback.configurationFile", dataxHome + "/conf/logback.xml");
