@@ -432,17 +432,20 @@ public class Client {
         // Copy the application master jar to the filesystem
         // Create a local resource to point to the destination jar path
         FileSystem fs = FileSystem.get(conf);
-        Path dst = addToLocalResources(fs, appMasterJar, Constants.APP_MASTER_JAR_PATH, appId.toString(), localResources, null);
 
+        Path dst;
+        if (appMasterJar.startsWith("hdfs")) {
+            String path = new Path(appMasterJar).toUri().getPath();
+            dst = fs.makeQualified(new Path(path));
+            addlocalResources(fs, Constants.APP_MASTER_JAR_PATH, localResources, dst);
+        } else {
+            dst = addToLocalResources(fs, appMasterJar, Constants.APP_MASTER_JAR_PATH, appId.toString(), localResources, null);
+        }
         YarnHelper.addFrameworkToDistributedCache(dst.toUri().toString(), localResources, conf);
 
-/*        if (null != dataxJob){
-            addToLocalResources(fs, dataxJob, Constants.DATAX_JOB, appId.toString(), localResources, null);
-        }*/
-
         if (null != dataxHomeArchivePath) {
-            if (StrUtil.endWith(dataxHomeArchivePath,".tar.gz")){
-                addToLocalResources(fs, dataxHomeArchivePath, Constants.DATAX,localResources);
+            if (StrUtil.endWith(dataxHomeArchivePath, ".tar.gz")) {
+                addToLocalResources(fs, dataxHomeArchivePath, Constants.DATAX, localResources);
             }
         }
 
@@ -722,6 +725,11 @@ public class Client {
         } else {
             fs.copyFromLocalFile(new Path(fileSrcPath), dst);
         }
+        addlocalResources(fs, fileDstPath, localResources, dst);
+        return dst;
+    }
+
+    private static void addlocalResources(FileSystem fs, String fileDstPath, Map<String, LocalResource> localResources, Path dst) throws IOException {
         FileStatus scFileStatus = fs.getFileStatus(dst);
         LocalResource scRsrc =
                 LocalResource.newInstance(
@@ -729,7 +737,6 @@ public class Client {
                         LocalResourceType.FILE, LocalResourceVisibility.APPLICATION,
                         scFileStatus.getLen(), scFileStatus.getModificationTime());
         localResources.put(fileDstPath, scRsrc);
-        return dst;
     }
 
     private Path addToLocalResources(FileSystem fs, String path, String name, Map<String, LocalResource> localResources) throws IOException {
