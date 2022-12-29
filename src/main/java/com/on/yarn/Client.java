@@ -1,6 +1,8 @@
 package com.on.yarn;
 
+import cn.hutool.core.codec.Base64;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import com.on.yarn.constant.Constants;
 import com.on.yarn.util.Log4jPropertyHelper;
@@ -266,6 +268,7 @@ public class Client {
             throw new IllegalArgumentException("No datax_job file path specified for application master");
         }
         dataxJob = cliParser.getOptionValue("datax_job");
+        dataxJob = FileUtil.readUtf8String(dataxJob);
 
         if (!cliParser.hasOption("datax_home_hdfs")) {
             throw new IllegalArgumentException("No datax_home_hdfs file path specified for application master");
@@ -433,9 +436,9 @@ public class Client {
 
         YarnHelper.addFrameworkToDistributedCache(dst.toUri().toString(), localResources, conf);
 
-        if (null != dataxJob){
+/*        if (null != dataxJob){
             addToLocalResources(fs, dataxJob, Constants.DATAX_JOB, appId.toString(), localResources, null);
-        }
+        }*/
 
         if (null != dataxHomeArchivePath) {
             if (StrUtil.endWith(dataxHomeArchivePath,".tar.gz")){
@@ -513,6 +516,7 @@ public class Client {
         vargs.add("-Duser.language=zh");
         vargs.add("-Dfile.encoding=utf-8");
         vargs.add("-Ddatax=" + dataxHomeArchivePath);
+        vargs.add("-Ddatax.job=" + Base64.encode(dataxJob));
         ClientServer clientServer = new ClientServer();
         clientServer.initClient();
         vargs.add("-Dlog=" + clientServer.getUrl());
