@@ -25,6 +25,4 @@ public interface Executor {
             e.printStackTrace();
         }
     }
-
-    ;
 }
