@@ -55,7 +55,6 @@ public class YarnHelper {
         Path path = new Path(uri.getScheme(), uri.getAuthority(), uri.getPath());
         FileSystem fs = path.getFileSystem(conf);
         Path frameworkPath = fs.makeQualified(new Path(uri.getScheme(), uri.getAuthority(), uri.getPath()));
-
         FileContext fc = FileContext.getFileContext(frameworkPath.toUri(), conf);
         frameworkPath = fc.resolvePath(frameworkPath);
         uri = frameworkPath.toUri();

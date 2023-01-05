@@ -35,8 +35,12 @@ import org.apache.hadoop.yarn.exceptions.YarnException;
 import org.apache.hadoop.yarn.util.ConverterUtils;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.*;
+
+import static com.on.yarn.constant.Constants.*;
 
 @InterfaceAudience.Public
 @InterfaceStability.Unstable
@@ -349,7 +353,7 @@ public class Client {
      * @throws IOException
      * @throws YarnException
      */
-    public boolean run() throws IOException, YarnException {
+    public boolean run() throws IOException, YarnException, URISyntaxException {
 
         LOG.info("Running Client");
         yarnClient.start();
@@ -431,10 +435,10 @@ public class Client {
         LOG.info("Copy App Master jar from local filesystem and add to local environment");
         // Copy the application master jar to the filesystem
         // Create a local resource to point to the destination jar path
-        FileSystem fs = FileSystem.get(conf);
+        FileSystem fs = getFileSystem(conf, appMasterJar);
 
         Path dst;
-        if (appMasterJar.startsWith("hdfs")) {
+        if (StrUtil.startWithAny(appMasterJar, "hdfs", S_3_A, S_3_N, S_3)) {
             String path = new Path(appMasterJar).toUri().getPath();
             dst = fs.makeQualified(new Path(path));
             addlocalResources(fs, Constants.APP_MASTER_JAR_PATH, localResources, dst);
@@ -743,10 +747,21 @@ public class Client {
         Path dst = fs.makeQualified(new Path(path));
         FileStatus scFileStatus = fs.getFileStatus(dst);
         LocalResource scRsrc = LocalResource.newInstance(
-                        ConverterUtils.getYarnUrlFromURI(dst.toUri()),
-                        LocalResourceType.ARCHIVE, LocalResourceVisibility.APPLICATION,
-                        scFileStatus.getLen(), scFileStatus.getModificationTime());
+                ConverterUtils.getYarnUrlFromURI(dst.toUri()),
+                LocalResourceType.ARCHIVE, LocalResourceVisibility.APPLICATION,
+                scFileStatus.getLen(), scFileStatus.getModificationTime());
         localResources.put(name, scRsrc);
         return dst;
+    }
+
+    public static FileSystem getFileSystem(Configuration conf, String path) throws IOException, URISyntaxException {
+        FileSystem fs;
+        if (StrUtil.startWithAny(path, S_3_A, S_3_N, S_3)) {
+            conf.set("fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem");
+            fs = FileSystem.get(new URI(path), conf);
+        } else {
+            fs = FileSystem.get(conf);
+        }
+        return fs;
     }
 }
