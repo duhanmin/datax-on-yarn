@@ -111,7 +111,9 @@ public class ApplicationMaster {
     // Env variables to be setup for the shell command
     private Map<String, String> shellEnv = new HashMap<>();
 
-    private volatile boolean done;
+    private static volatile boolean done;
+
+    private static volatile boolean doneDataX = false;
 
     private ByteBuffer allTokens;
 
@@ -143,15 +145,16 @@ public class ApplicationMaster {
             appMaster.run();
             LOG.info("ApplicationMaster finish...");
             Executor dataXExecutor = null;
-            if ("true".equals(System.getProperty("reflect"))){
+            if ("true".equals(System.getProperty("reflect"))) {
                 dataXExecutor = new DataXExecutor();
-            }else {
+            } else {
                 dataXExecutor = new DataXPidExecutor(amMemory);
             }
             dataXExecutor.run();
+            done = true;
+            doneDataX = true;
             result = appMaster.finish();
             LOG.info("ApplicationMaster finish");
-
         } catch (Throwable t) {
             LOG.fatal("Error running ApplicationMaster", t);
             LogManager.shutdown();
@@ -497,17 +500,23 @@ public class ApplicationMaster {
         FinalApplicationStatus appStatus;
         String appMessage = null;
         boolean success = true;
+        // TODO: 2023/2/15 试试这里,不管node线程,直接结束
         if (numFailedContainers.get() == 0
                 && numCompletedContainers.get() == numTotalContainers) {
             appStatus = FinalApplicationStatus.SUCCEEDED;
         } else {
-            appStatus = FinalApplicationStatus.FAILED;
-            appMessage = "Diagnostics." + ", total=" + numTotalContainers
-                    + ", completed=" + numCompletedContainers.get() + ", allocated="
-                    + numAllocatedContainers.get() + ", failed="
-                    + numFailedContainers.get();
-            success = false;
+            if (doneDataX) {
+                appStatus = FinalApplicationStatus.SUCCEEDED;
+            } else {
+                appStatus = FinalApplicationStatus.FAILED;
+                appMessage = "Diagnostics." + ", total=" + numTotalContainers
+                        + ", completed=" + numCompletedContainers.get() + ", allocated="
+                        + numAllocatedContainers.get() + ", failed="
+                        + numFailedContainers.get();
+                success = false;
+            }
         }
+
         try {
             amRMClient.unregisterApplicationMaster(appStatus, appMessage, null);
         } catch (YarnException | IOException ex) {
@@ -729,55 +738,6 @@ public class ApplicationMaster {
         public void run() {
             LOG.info("Setting up container launch container for containerId="
                     + container.getId());
-/*
-            Map<String, String> currentEnvs = System.getenv();
-            if (!currentEnvs.containsKey(Constants.JAR_FILE_PATH)) {
-                throw new RuntimeException(Constants.JAR_FILE_PATH
-                        + " not set in the environment.");
-            }
-            String frameworkPath = currentEnvs.get(Constants.JAR_FILE_PATH);
-
-            shellEnv.put("CLASSPATH", YarnHelper.buildClassPathEnv(conf));
-
-            // Set the local resources
-            Map<String, LocalResource> localResources = new HashMap<>(4);
-
-            try {
-                YarnHelper.addFrameworkToDistributedCache(frameworkPath, localResources, conf);
-            } catch (IOException e) {
-                Throwables.propagate(e);
-            }
-
-            // Set the necessary command to execute on the allocated container
-            Vector<CharSequence> vargs = new Vector<>(10);
-
-            // Set java executable command
-            vargs.add(System.getenv("JAVA_HOME") + "/bin/java");
-            // Set am memory size
-            vargs.add("-Xms" + containerMemory + "m");
-            vargs.add("-Xmx" + containerMemory + "m");
-            vargs.add(javaOpts);
-
-            // Set tmp dir
-            vargs.add("-Djava.io.tmpdir=$PWD/tmp");
-
-            // Set log4j configuration file
-            //vargs.add("-Dlog4j.configuration=" + Constants.NESTO_YARN_APPCONTAINER_LOG4J);
-
-            // Set class name
-            vargs.add(HolleWorld.class.getName());
-
-            // Set args for the shell command if any
-            vargs.add(shellArgs);
-            // Add log redirect params
-            vargs.add("1>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout");
-            vargs.add("2>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr");
-
-            // Get final command
-            StringBuilder command = new StringBuilder();
-            for (CharSequence str : vargs) {
-                command.append(str).append(" ");
-            }*/
 
             List<String> commands = new ArrayList<>();
             commands.add("ls");
