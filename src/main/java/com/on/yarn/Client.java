@@ -7,7 +7,12 @@ import cn.hutool.core.util.StrUtil;
 import com.on.yarn.constant.Constants;
 import com.on.yarn.util.Log4jPropertyHelper;
 import com.on.yarn.util.YarnHelper;
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -27,7 +32,23 @@ import org.apache.hadoop.security.token.Token;
 import org.apache.hadoop.yarn.api.ApplicationConstants;
 import org.apache.hadoop.yarn.api.ApplicationConstants.Environment;
 import org.apache.hadoop.yarn.api.protocolrecords.GetNewApplicationResponse;
-import org.apache.hadoop.yarn.api.records.*;
+import org.apache.hadoop.yarn.api.records.ApplicationId;
+import org.apache.hadoop.yarn.api.records.ApplicationReport;
+import org.apache.hadoop.yarn.api.records.ApplicationSubmissionContext;
+import org.apache.hadoop.yarn.api.records.ContainerLaunchContext;
+import org.apache.hadoop.yarn.api.records.FinalApplicationStatus;
+import org.apache.hadoop.yarn.api.records.LocalResource;
+import org.apache.hadoop.yarn.api.records.LocalResourceType;
+import org.apache.hadoop.yarn.api.records.LocalResourceVisibility;
+import org.apache.hadoop.yarn.api.records.NodeReport;
+import org.apache.hadoop.yarn.api.records.NodeState;
+import org.apache.hadoop.yarn.api.records.Priority;
+import org.apache.hadoop.yarn.api.records.QueueACL;
+import org.apache.hadoop.yarn.api.records.QueueInfo;
+import org.apache.hadoop.yarn.api.records.QueueUserACLInfo;
+import org.apache.hadoop.yarn.api.records.Resource;
+import org.apache.hadoop.yarn.api.records.YarnApplicationState;
+import org.apache.hadoop.yarn.api.records.YarnClusterMetrics;
 import org.apache.hadoop.yarn.client.api.YarnClient;
 import org.apache.hadoop.yarn.client.api.YarnClientApplication;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
@@ -38,9 +59,15 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
-import static com.on.yarn.constant.Constants.*;
+import static com.on.yarn.constant.Constants.S_3;
+import static com.on.yarn.constant.Constants.S_3_A;
+import static com.on.yarn.constant.Constants.S_3_N;
 
 @InterfaceAudience.Public
 @InterfaceStability.Unstable
@@ -441,10 +468,10 @@ public class Client {
         if (StrUtil.startWithAny(appMasterJar, "hdfs", S_3_A, S_3_N, S_3)) {
             String path = new Path(appMasterJar).toUri().getPath();
             dst = fs.makeQualified(new Path(path));
-            addlocalResources(fs, Constants.APP_MASTER_JAR_PATH, localResources, dst);
         } else {
-            dst = addToLocalResources(fs, appMasterJar, Constants.APP_MASTER_JAR_PATH, appId.toString(), localResources, null);
+            dst = upLoad(fs, appMasterJar);
         }
+        addlocalResources(fs, Constants.APP_MASTER_JAR_PATH, localResources, dst);
         YarnHelper.addFrameworkToDistributedCache(dst.toUri().toString(), localResources, conf);
 
         if (null != dataxHomeArchivePath) {
@@ -711,6 +738,15 @@ public class Client {
         // Response can be ignored as it is non-null on success or
         // throws an exception in case of failures
         yarnClient.killApplication(appId);
+    }
+
+    private Path upLoad(FileSystem fs, String path) throws IOException {
+        String name = FileUtil.getName(path);
+        Path yarnJar = new Path(fs.getHomeDirectory(), "datax_on_yarn_jar/" + name);
+        if (!fs.exists(yarnJar)) {
+            fs.copyFromLocalFile(new Path(path), yarnJar);
+        }
+        return yarnJar;
     }
 
     private Path addToLocalResources(FileSystem fs, String fileSrcPath,
