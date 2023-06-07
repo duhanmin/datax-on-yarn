@@ -538,7 +538,7 @@ public class Client {
 
         // Set java executable command
         LOG.info("Setting up app master command");
-        vargs.add(System.getenv("JAVA_HOME") + "/bin/java");
+        vargs.add("java");
         // Set Xmx based on am memory size
         vargs.add("-Xms" + 128 + "m");
         if (reflect_run){
