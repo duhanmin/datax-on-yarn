@@ -164,7 +164,8 @@ public class Client {
                 client.printUsage();
                 System.exit(-1);
             }
-            result = client.run();
+            ApplicationId app = client.run();
+            result = client.monitorApplication(app);
         } catch (Throwable t) {
             LOG.fatal("Error running CLient", t);
             System.exit(1);
@@ -380,7 +381,7 @@ public class Client {
      * @throws IOException
      * @throws YarnException
      */
-    public boolean run() throws IOException, YarnException, URISyntaxException {
+    public ApplicationId run() throws IOException, YarnException, URISyntaxException {
 
         LOG.info("Running Client");
         yarnClient.start();
@@ -649,7 +650,7 @@ public class Client {
         // app submission failure?
 
         // Monitor the application
-        return monitorApplication(appId);
+        return appId;
 
     }
 
@@ -662,7 +663,7 @@ public class Client {
      * @throws YarnException
      * @throws IOException
      */
-    private boolean monitorApplication(ApplicationId appId)
+    public boolean monitorApplication(ApplicationId appId)
             throws YarnException, IOException {
 
         while (true) {
@@ -726,7 +727,7 @@ public class Client {
      * @throws YarnException
      * @throws IOException
      */
-    private void forceKillApplication(ApplicationId appId)
+    public void forceKillApplication(ApplicationId appId)
             throws YarnException, IOException {
         // TODO clarify whether multiple jobs with the same app id can be submitted and be running at
         // the same time.
