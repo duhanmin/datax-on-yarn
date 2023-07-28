@@ -46,18 +46,22 @@ public class DataXPidExecutor implements Executor {
     }
 
     @Override
+    public String getLog() {
+        return getLog(path);
+    }
+
+    @Override
     public void run() throws Throwable {
         try {
             inputStream = pro.getInputStream();
             IoUtil.readUtf8Lines(inputStream, (LineHandler) log::info);
             int exitCode = pro.waitFor();
-            if (exitCode != 0){
+            if (exitCode != 0) {
                 throw new RuntimeException();
-            }else {
-                log.info("job successfully :"+script);
+            } else {
+                log.info("job successfully :" + script);
             }
         }finally {
-            end(path);
             IoUtil.close(inputStream);
             RuntimeUtil.destroy(pro);
             FileUtil.del(sh);

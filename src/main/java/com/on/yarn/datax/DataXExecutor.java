@@ -19,25 +19,26 @@ public class DataXExecutor implements Executor{
 
     @Override
     public void run() throws Throwable {
-        try {
-            String dataxHome = System.getProperty("datax");
-            path = new File("./").getAbsolutePath() + "/";
-            String dataxJob = path + Constants.DATAX_JOB;
-            String content = Base64.decodeStr(System.getProperty(Constants.DATAX_JOB));
-            FileUtil.writeUtf8String(content, dataxJob);
-            if (StrUtil.endWith(dataxHome, ".tar.gz")) {
-                dataxHome = new File(path + Constants.DATAX_HOME).getAbsolutePath();
-            } else {
-                init(dataxHome, path);
-            }
-            System.setProperty("datax.home", dataxHome);
-            System.setProperty("logback.configurationFile", dataxHome + "/conf/logback.xml");
-            System.setProperty("java.util.logging.config.file", dataxHome + "/conf/parquet-logging.properties");
-
-            String[] args = new String[]{"-mode", "standalone", "-jobid", "-1", "-job", dataxJob};
-            Engine.entry(args);
-        }finally {
-            end(path);
+        String dataxHome = System.getProperty("datax");
+        path = new File("./").getAbsolutePath() + "/";
+        String dataxJob = path + Constants.DATAX_JOB;
+        String content = Base64.decodeStr(System.getProperty(Constants.DATAX_JOB));
+        FileUtil.writeUtf8String(content, dataxJob);
+        if (StrUtil.endWith(dataxHome, ".tar.gz")) {
+            dataxHome = new File(path + Constants.DATAX_HOME).getAbsolutePath();
+        } else {
+            init(dataxHome, path);
         }
+        System.setProperty("datax.home", dataxHome);
+        System.setProperty("logback.configurationFile", dataxHome + "/conf/logback.xml");
+        System.setProperty("java.util.logging.config.file", dataxHome + "/conf/parquet-logging.properties");
+
+        String[] args = new String[]{"-mode", "standalone", "-jobid", "-1", "-job", dataxJob};
+        Engine.entry(args);
+    }
+
+    @Override
+    public String getLog() {
+        return getLog(path);
     }
 }

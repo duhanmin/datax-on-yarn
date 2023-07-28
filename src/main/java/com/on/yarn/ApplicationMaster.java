@@ -7,7 +7,11 @@ import com.on.yarn.datax.DataXPidExecutor;
 import com.on.yarn.datax.Executor;
 import com.on.yarn.util.Log4jPropertyHelper;
 import lombok.Data;
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.classification.InterfaceAudience;
@@ -25,7 +29,17 @@ import org.apache.hadoop.yarn.api.ApplicationConstants;
 import org.apache.hadoop.yarn.api.ApplicationConstants.Environment;
 import org.apache.hadoop.yarn.api.ContainerManagementProtocol;
 import org.apache.hadoop.yarn.api.protocolrecords.RegisterApplicationMasterResponse;
-import org.apache.hadoop.yarn.api.records.*;
+import org.apache.hadoop.yarn.api.records.ApplicationAttemptId;
+import org.apache.hadoop.yarn.api.records.Container;
+import org.apache.hadoop.yarn.api.records.ContainerExitStatus;
+import org.apache.hadoop.yarn.api.records.ContainerId;
+import org.apache.hadoop.yarn.api.records.ContainerLaunchContext;
+import org.apache.hadoop.yarn.api.records.ContainerState;
+import org.apache.hadoop.yarn.api.records.ContainerStatus;
+import org.apache.hadoop.yarn.api.records.FinalApplicationStatus;
+import org.apache.hadoop.yarn.api.records.NodeReport;
+import org.apache.hadoop.yarn.api.records.Priority;
+import org.apache.hadoop.yarn.api.records.Resource;
 import org.apache.hadoop.yarn.client.api.AMRMClient.ContainerRequest;
 import org.apache.hadoop.yarn.client.api.async.AMRMClientAsync;
 import org.apache.hadoop.yarn.client.api.async.NMClientAsync;
@@ -36,9 +50,18 @@ import org.apache.hadoop.yarn.security.AMRMTokenIdentifier;
 import org.apache.hadoop.yarn.util.ConverterUtils;
 import org.apache.log4j.LogManager;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.StringReader;
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -133,6 +156,8 @@ public class ApplicationMaster {
 
     private static Process pro;
 
+    private static Executor dataXExecutor = null;
+
     public static void main(String[] args) {
         boolean result = false;
         try {
@@ -144,7 +169,6 @@ public class ApplicationMaster {
             }
             appMaster.run();
             LOG.info("ApplicationMaster finish...");
-            Executor dataXExecutor = null;
             if ("true".equals(System.getProperty("reflect"))) {
                 dataXExecutor = new DataXExecutor();
             } else {
@@ -504,15 +528,18 @@ public class ApplicationMaster {
         if (numFailedContainers.get() == 0
                 && numCompletedContainers.get() == numTotalContainers) {
             appStatus = FinalApplicationStatus.SUCCEEDED;
+            appMessage = dataXExecutor.getLog();
         } else {
             if (doneDataX) {
                 appStatus = FinalApplicationStatus.SUCCEEDED;
+                appMessage = dataXExecutor.getLog();
             } else {
                 appStatus = FinalApplicationStatus.FAILED;
                 appMessage = "Diagnostics." + ", total=" + numTotalContainers
                         + ", completed=" + numCompletedContainers.get() + ", allocated="
                         + numAllocatedContainers.get() + ", failed="
-                        + numFailedContainers.get();
+                        + numFailedContainers.get() + ", log="
+                        + dataXExecutor.getLog();
                 success = false;
             }
         }

@@ -551,9 +551,6 @@ public class Client {
         vargs.add("-Dfile.encoding=utf-8");
         vargs.add("-Ddatax=" + dataxHomeArchivePath);
         vargs.add("-Ddatax.job=" + Base64.encode(dataxJob));
-        ClientServer clientServer = new ClientServer();
-        clientServer.initClient();
-        vargs.add("-Dlog=" + clientServer.getUrl());
 
         if (CollUtil.isNotEmpty(parameter)){
             for (String p : parameter) {
