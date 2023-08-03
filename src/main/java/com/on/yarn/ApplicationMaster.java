@@ -77,7 +77,6 @@ public class ApplicationMaster {
     private Configuration conf;
 
     // Handle to communicate with the Resource Manager
-    @SuppressWarnings("rawtypes")
     private AMRMClientAsync amRMClient;
 
     // In both secure and non-secure modes, this points to the job-submitter.
@@ -160,8 +159,9 @@ public class ApplicationMaster {
 
     public static void main(String[] args) {
         boolean result = false;
+        ApplicationMaster appMaster = null;
         try {
-            ApplicationMaster appMaster = new ApplicationMaster();
+            appMaster = new ApplicationMaster();
             LOG.info("Initializing ApplicationMaster");
             boolean doRun = appMaster.init(args);
             if (!doRun) {
@@ -175,12 +175,16 @@ public class ApplicationMaster {
                 dataXExecutor = new DataXPidExecutor(amMemory);
             }
             dataXExecutor.run();
+            appMaster.unregisterApplicationMaster(FinalApplicationStatus.SUCCEEDED, "log:" + dataXExecutor.getLog());
             done = true;
             doneDataX = true;
             result = appMaster.finish();
             LOG.info("ApplicationMaster finish");
         } catch (Throwable t) {
             LOG.fatal("Error running ApplicationMaster", t);
+            if (appMaster != null) {
+                appMaster.unregisterApplicationMaster(FinalApplicationStatus.FAILED, "log:" + dataXExecutor.getLog());
+            }
             LogManager.shutdown();
             ExitUtil.terminate(1, t);
         } finally {
@@ -528,31 +532,31 @@ public class ApplicationMaster {
         if (numFailedContainers.get() == 0
                 && numCompletedContainers.get() == numTotalContainers) {
             appStatus = FinalApplicationStatus.SUCCEEDED;
-            appMessage = dataXExecutor.getLog();
         } else {
             if (doneDataX) {
                 appStatus = FinalApplicationStatus.SUCCEEDED;
-                appMessage = dataXExecutor.getLog();
             } else {
                 appStatus = FinalApplicationStatus.FAILED;
                 appMessage = "Diagnostics." + ", total=" + numTotalContainers
                         + ", completed=" + numCompletedContainers.get() + ", allocated="
                         + numAllocatedContainers.get() + ", failed="
-                        + numFailedContainers.get() + ", log="
-                        + dataXExecutor.getLog();
+                        + numFailedContainers.get();
                 success = false;
             }
         }
 
+        unregisterApplicationMaster(appStatus, appMessage);
+        amRMClient.stop();
+
+        return success;
+    }
+
+    public void unregisterApplicationMaster(FinalApplicationStatus appStatus, String appMessage) {
         try {
             amRMClient.unregisterApplicationMaster(appStatus, appMessage, null);
         } catch (YarnException | IOException ex) {
             LOG.error("Failed to unregister application", ex);
         }
-
-        amRMClient.stop();
-
-        return success;
     }
 
     /**
