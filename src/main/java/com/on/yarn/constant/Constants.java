@@ -13,6 +13,8 @@ import java.io.InputStream;
 @Slf4j
 public class Constants {
 
+    public static final String OSS = "oss://";
+
     public static final String S_3_A = "s3a://";
 
     public static final String S_3_N = "s3n://";

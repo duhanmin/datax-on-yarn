@@ -65,6 +65,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import static com.on.yarn.constant.Constants.OSS;
 import static com.on.yarn.constant.Constants.S_3;
 import static com.on.yarn.constant.Constants.S_3_A;
 import static com.on.yarn.constant.Constants.S_3_N;
@@ -792,6 +793,10 @@ public class Client {
         FileSystem fs;
         if (StrUtil.startWithAny(path, S_3_A, S_3_N, S_3)) {
             conf.set("fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem");
+            fs = FileSystem.get(new URI(path), conf);
+        } else if (StrUtil.startWithAny(path, OSS)) {
+            conf.set("fs.AbstractFileSystem.oss.impl", "org.apache.hadoop.fs.aliyun.oss.OSS");
+            conf.set("fs.oss.impl", "org.apache.hadoop.fs.aliyun.oss.AliyunOSSFileSystem");
             fs = FileSystem.get(new URI(path), conf);
         } else {
             fs = FileSystem.get(conf);
