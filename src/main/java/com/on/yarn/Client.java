@@ -467,7 +467,7 @@ public class Client {
         FileSystem fs = getFileSystem(conf, appMasterJar);
 
         Path dst;
-        if (StrUtil.startWithAny(appMasterJar, "hdfs", S_3_A, S_3_N, S_3)) {
+        if (StrUtil.startWithAny(appMasterJar, "hdfs", S_3_A, S_3_N, S_3, OSS)) {
             String path = new Path(appMasterJar).toUri().getPath();
             dst = fs.makeQualified(new Path(path));
         } else {
