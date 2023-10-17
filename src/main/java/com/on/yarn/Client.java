@@ -795,8 +795,6 @@ public class Client {
             conf.set("fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem");
             fs = FileSystem.get(new URI(path), conf);
         } else if (StrUtil.startWithAny(path, OSS)) {
-            conf.set("fs.AbstractFileSystem.oss.impl", "org.apache.hadoop.fs.aliyun.oss.OSS");
-            conf.set("fs.oss.impl", "org.apache.hadoop.fs.aliyun.oss.AliyunOSSFileSystem");
             fs = FileSystem.get(new URI(path), conf);
         } else {
             fs = FileSystem.get(conf);
