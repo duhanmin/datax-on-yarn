@@ -14,7 +14,7 @@
         <directory>src/main/resources</directory>
       </resource>
     </resources>
-      <finalName>datax-on-1yarn-${project.parent.version}</finalName>
+    <finalName>datax-on-yarn-${project.parent.version}</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>
@@ -36,7 +36,7 @@
                 </filter>
               </filters>
               <artifactSet>
-                  <excludes/>
+                <excludes/>
               </artifactSet>
               <transformers>
                 <transformer>
@@ -48,7 +48,7 @@
                 <transformer>
                   <resource>META-INF/spring.tooling</resource>
                 </transformer>
-                  <transformer/>
+                <transformer/>
               </transformers>
             </configuration>
           </execution>
