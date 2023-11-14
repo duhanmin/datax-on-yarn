@@ -2,13 +2,13 @@
 
 datax-on-yarn可以让datax在yarn master上运行
 
+## 提交方式
+
+### shell
+
 * datax_home_hdfs datax在hdfs的安装包
 * datax_job 配置json
 * yarn master_memory内存为yarn master与datax job内存之和
-
-## 提交
-
-### shell方式
 
 ```shell
 /usr/bin/yarn jar /mnt/dss/211/datax-on-yarn-1.0.0.jar com.on.yarn.Client \
@@ -22,9 +22,10 @@ datax-on-yarn可以让datax在yarn master上运行
   -datax_home_hdfs /tmp/linkis/hadoop/datax.tar.gz
 ```
 
-### sdk api方式(scala)
+### sdk api(scala)
 
-JobLogger类型重写com.on.yarn.base.YarnManipulator日志输出接口
+* JobLogger类型重写com.on.yarn.base.YarnManipulator日志输出接口
+* dataxJob中传入运行参数
 
 ```scala
 val jobLogger = new JobLogger(job)
