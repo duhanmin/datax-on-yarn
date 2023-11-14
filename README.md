@@ -22,7 +22,7 @@ datax-on-yarn可以让datax在yarn master上运行
   -datax_home_hdfs /tmp/linkis/hadoop/datax.tar.gz
 ```
 
-### scala方式
+### sdk api方式(scala)
 
 JobLogger类型重写com.on.yarn.base.YarnManipulator日志输出接口
 
