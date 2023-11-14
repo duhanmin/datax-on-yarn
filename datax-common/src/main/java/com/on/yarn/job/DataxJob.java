@@ -2,6 +2,7 @@ package com.on.yarn.job;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.UUID;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONUtil;
 import lombok.Data;
 
@@ -31,11 +32,18 @@ public class DataxJob {
     //@ApiModelProperty(name = "dataxHome", value = "datax安装目录", dataType = "string", example = "/mnt/dss/datax")
     private String dataxHome = "/mnt/dss/datax";
 
+    private boolean reflectRun = true;
+
     public String[] toStrinArray() {
-        File mkdir = FileUtil.mkdir("/tmp/datax-api/job/");
-        jobPath = FileUtil.touch(mkdir.getAbsolutePath() + "/" + UUID.fastUUID().toString(true) + ".json");
-        FileUtil.writeUtf8String(JSONUtil.toJsonStr(job), jobPath);
-        return new String[]{"-jar_path", jarPath, "-appname", appName, "-master_memory", memory.toString(), "-queue", queue, "-datax_job", jobPath.getAbsolutePath(), "-datax_home_hdfs", dataxHome};
+        if (ObjectUtil.isNull(jobPath) && ObjectUtil.isNull(job)) {
+            throw new IllegalArgumentException("jobPath or job is null");
+        }
+        if (ObjectUtil.isNull(jobPath) && ObjectUtil.isNotNull(job)) {
+            File mkdir = FileUtil.mkdir("/tmp/datax-api/job/");
+            jobPath = FileUtil.touch(mkdir.getAbsolutePath() + "/" + UUID.fastUUID().toString(true) + ".json");
+            FileUtil.writeUtf8String(JSONUtil.toJsonStr(job), jobPath);
+        }
+        return new String[]{"-jar_path", jarPath, "-appname", appName, "-master_memory", memory.toString(), "-queue", queue, "-datax_job", jobPath.getAbsolutePath(), "-reflect_run", Boolean.toString(reflectRun), "-datax_home_hdfs", dataxHome};
     }
 
     @Override

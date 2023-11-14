@@ -126,7 +126,7 @@ public class Client {
     private String dataxJob = "";
     private String dataxHomeArchivePath = "";
     private String user;
-    private YarnManipulator yarnManipulator;
+    private static YarnManipulator yarnManipulator;
     // datax参数
     private List<String> parameter = CollUtil.newArrayList();
     /**
@@ -134,7 +134,7 @@ public class Client {
      */
     public static void main(String[] args) {
         boolean result = false;
-        YarnManipulator yarnManipulator = new LocalYarnManipulator();
+        yarnManipulator = new LocalYarnManipulator();
         try {
             Client client = new Client();
             yarnManipulator.info("Initializing Client");
