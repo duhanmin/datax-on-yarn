@@ -27,7 +27,7 @@ datax-on-yarn可以让datax在yarn master上运行
 JobLogger类型重写com.on.yarn.base.YarnManipulator日志输出接口
 
 ```scala
-    val jobLogger = new JobLogger(job)
+val jobLogger = new JobLogger(job)
 var client: Client = null
 try {
   val cmd = dataxJob.toStrinArray
