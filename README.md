@@ -6,6 +6,10 @@ datax-on-yarn可以让datax在yarn master上运行
 * datax_job 配置json
 * yarn master_memory内存为yarn master与datax job内存之和
 
+## 提交
+
+### shell方式
+
 ```shell
 /usr/bin/yarn jar /mnt/dss/211/datax-on-yarn-1.0.0.jar com.on.yarn.Client \
   -jar_path /mnt/dss/211/datax-on-yarn-1.0.0.jar \
@@ -18,6 +22,33 @@ datax-on-yarn可以让datax在yarn master上运行
   -datax_home_hdfs /tmp/linkis/hadoop/datax.tar.gz
 ```
 
+### scala方式
+
+JobLogger类型重写com.on.yarn.base.YarnManipulator日志输出接口
+
+```scala
+    val jobLogger = new JobLogger(job)
+var client: Client = null
+try {
+  val cmd = dataxJob.toStrinArray
+  jobLogger.info("------------------运行参数: " + ArrayUtil.toString(cmd))
+  client = new Client(jobLogger)
+  if (!client.init(cmd)) throw new RuntimeException("参数初始化异常: " + dataxJob)
+  val applicationId: ApplicationId = client.run
+  appId = applicationId.toString
+  jobLogger.info("------------------DataX yarn id: " + applicationId.toString)
+  val result = client.monitorApplication(applicationId)
+  if (result) jobLogger.info("Application completed successfully")
+  else throw new RuntimeException("任务运行异常,详见日志,AppID: " + applicationId)
+} catch {
+  case e: Exception => {
+    jobLogger.info(ExceptionUtil.stacktraceToString(e))
+  }
+} finally {
+  if (null != client) client.stop()
+}
+
+```
 
 运行示例
 
