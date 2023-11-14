@@ -1,6 +1,9 @@
+/Users/duhanmin/IdeaProjects/daima/datax-on-yarn/datax-common/src/main/java/com/on/yarn/job/DataxJob.java
 /Users/duhanmin/IdeaProjects/daima/datax-on-yarn/datax-common/src/main/java/com/on/yarn/datax/DataXExecutor.java
 /Users/duhanmin/IdeaProjects/daima/datax-on-yarn/datax-common/src/main/java/com/on/yarn/datax/DataXPidExecutor.java
 /Users/duhanmin/IdeaProjects/daima/datax-on-yarn/datax-common/src/main/java/com/on/yarn/datax/Executor.java
 /Users/duhanmin/IdeaProjects/daima/datax-on-yarn/datax-common/src/main/java/com/on/yarn/util/Log4jPropertyHelper.java
+/Users/duhanmin/IdeaProjects/daima/datax-on-yarn/datax-common/src/main/java/com/on/yarn/base/LocalYarnManipulator.java
 /Users/duhanmin/IdeaProjects/daima/datax-on-yarn/datax-common/src/main/java/com/on/yarn/constant/Constants.java
 /Users/duhanmin/IdeaProjects/daima/datax-on-yarn/datax-common/src/main/java/com/on/yarn/util/YarnHelper.java
+/Users/duhanmin/IdeaProjects/daima/datax-on-yarn/datax-common/src/main/java/com/on/yarn/base/YarnManipulator.java
