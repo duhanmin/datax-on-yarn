@@ -26,6 +26,16 @@ datax-on-yarn可以让datax在yarn master上运行
 
 * JobLogger类型重写com.on.yarn.base.YarnManipulator日志输出接口
 * dataxJob中传入运行参数
+* 引入以下依赖
+
+```xml
+
+<dependency>
+    <groupId>com.on.yarn</groupId>
+    <artifactId>datax-client</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
 
 ```scala
 val jobLogger = new JobLogger(job)
