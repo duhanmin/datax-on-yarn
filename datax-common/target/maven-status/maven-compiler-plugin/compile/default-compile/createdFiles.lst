@@ -1,0 +1,6 @@
+com/on/yarn/util/YarnHelper.class
+com/on/yarn/util/Log4jPropertyHelper.class
+com/on/yarn/datax/Executor.class
+com/on/yarn/datax/DataXExecutor.class
+com/on/yarn/constant/Constants.class
+com/on/yarn/datax/DataXPidExecutor.class
