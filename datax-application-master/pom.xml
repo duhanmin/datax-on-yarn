@@ -47,7 +47,7 @@
     </dependencies>
 
     <build>
-        <finalName>datax-on-1yarn-${project.parent.version}</finalName>
+        <finalName>datax-on-yarn-${project.parent.version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
